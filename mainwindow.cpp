@@ -10,10 +10,9 @@ MainWindow::~MainWindow(){
 }
 
 bool MainWindow::Init(){
-    ConsoleMessage("Teste");
     return true;
 }
 
 void MainWindow::ConsoleMessage(QString msg){
-    _ui->textConsole->append(QDateTime::currentDateTime().toString("hh:mm:ss") + ": " + msg);
+    _ui->textConsole->append(QDateTime::currentDateTime().toString("hh:mm:ss") + " " + msg);
 }
