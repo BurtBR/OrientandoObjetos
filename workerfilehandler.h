@@ -2,6 +2,7 @@
 #define WORKERFILEHANDLER_H
 
 #include <QObject>
+#include "errormessage.h"
 
 class WorkerFileHandler : public QObject{
     Q_OBJECT
@@ -9,10 +10,11 @@ public:
     explicit WorkerFileHandler(QObject *parent = nullptr);
 
 public slots:
-    void OpenFile(QString filename);
+    void OpenObj(QString filename);
 
 signals:
-    void Message(QString);
+    void Message(QString, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::Misc);
+    void FileHandlingFinished();
 };
 
 #endif // WORKERFILEHANDLER_H

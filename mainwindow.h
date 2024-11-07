@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDateTime>
 #include <QThread>
+#include "errormessage.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -29,12 +30,12 @@ public:
     bool Init();
 
 private slots:
-    void WorkerMessage(QString msg);
+    void WorkerMessage(QString msg, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::Misc);
     void FileHandlingFinished();
 
     void On_actionAbrir_triggered(bool);
 
 signals:
-    void OpenFile(QString filename);
+    void OpenObj(QString filename);
 };
 #endif // MAINWINDOW_H

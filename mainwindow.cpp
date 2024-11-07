@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QMovie>
 #include "workerfilehandler.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
@@ -34,12 +35,17 @@ bool MainWindow::Init(){
     return true;
 }
 
-void MainWindow::WorkerMessage(QString msg){
-
+void MainWindow::WorkerMessage(QString msg, ErrorMessage::ErrorCode code){
+    ConsoleMessage(ErrorMessage::GetErrorStr(code) + msg);
 }
 
 void MainWindow::FileHandlingFinished(){
 
+    DeleteThread(&_threadFileHandler);
+    ConsoleMessage("Arquivo carregado.");
+
+    this->setEnabled(true);
+    _ui->labelGif->clear();
 }
 
 void MainWindow::ConsoleMessage(QString msg){
@@ -67,6 +73,12 @@ bool MainWindow::StartThreadFileHandler(){
     }
 
     connect(_threadFileHandler, &QThread::finished, worker, &WorkerFileHandler::deleteLater);
+    connect(worker, &WorkerFileHandler::Message, this, &MainWindow::WorkerMessage);
+    connect(worker, &WorkerFileHandler::FileHandlingFinished, this, &MainWindow::FileHandlingFinished);
+    connect(this, &MainWindow::OpenObj, worker, &WorkerFileHandler::OpenObj);
+
+    worker->moveToThread(_threadFileHandler);
+    _threadFileHandler->start();
 
     return true;
 }
@@ -77,5 +89,26 @@ void MainWindow::On_actionAbrir_triggered(bool){
     if(!filename.size())
         return;
 
+    if(!StartThreadFileHandler()){
+        ConsoleMessage(ErrorMessage::GetErrorStr(ErrorMessage::ErrorCode::FailedToAllocate));
+        return;
+    }
 
+    this->setEnabled(false);
+    QMovie *movie;
+
+    try{
+        movie = new QMovie(":/Images/Loading.gif");
+    }catch(...){
+        emit OpenObj(filename);
+        return;
+    }
+
+    connect(_threadFileHandler, &QThread::finished, movie, &QMovie::deleteLater);
+
+    _ui->labelGif->setMovie(movie);
+    _ui->labelGif->setScaledContents(true);
+    movie->start();
+
+    emit OpenObj(filename);
 }
