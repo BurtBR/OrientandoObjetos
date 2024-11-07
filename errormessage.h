@@ -11,6 +11,7 @@ public:
         Misc,
         FailedToWrite,
         FailedToOpenFile,
+        CorruptedFile,
         FailedToAllocate
     };
 

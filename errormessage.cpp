@@ -14,6 +14,10 @@ QString ErrorMessage::GetErrorStr(ErrorMessage::ErrorCode e){
         return "Falha ao abrir o arquivo.";
         break;
 
+    case ErrorCode::CorruptedFile:
+        return "Arquivo com dados inválidos.";
+        break;
+
     case ErrorCode::FailedToAllocate:
         return "Falha de alocação de recursos.";
         break;
