@@ -1,15 +1,18 @@
-#include "workerfilehandler.h"
+#include "workergeometry.h"
+
 #include <QFile>
 #include <QFileInfo>
 
-// TEMP
-#include <QThread>
-
-WorkerFileHandler::WorkerFileHandler(QObject *parent) : QObject{parent}{
+WorkerGeometry::WorkerGeometry(QObject *parent) : QObject{parent}{
 
 }
 
-void WorkerFileHandler::OpenObj(QString filename){
+WorkerGeometry::~WorkerGeometry(){
+
+}
+
+void WorkerGeometry::OpenObj(QString filename){
+
     QFile fp(filename);
     QFileInfo fileinfo(fp);
 
@@ -20,8 +23,6 @@ void WorkerFileHandler::OpenObj(QString filename){
     }
 
     emit Message("Carregando arquivo: " + fileinfo.fileName());
-
-    QThread::sleep(5);
 
     emit FileHandlingFinished();
 }

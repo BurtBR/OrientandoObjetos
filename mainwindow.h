@@ -5,9 +5,6 @@
 #include <QDateTime>
 #include <QThread>
 #include "errormessage.h"
-#include "vertice.h"
-#include "edge.h"
-#include "face.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -20,11 +17,11 @@ class MainWindow : public QMainWindow{
 
 private:
     Ui::MainWindow *_ui;
-    QThread *_threadFileHandler = nullptr;
+    QThread *_threadGeometry = nullptr;
 
     void DeleteThread(QThread **thread);
     void ConsoleMessage(QString msg);
-    bool StartThreadFileHandler();
+    bool StartThreadGeometry();
 
 public:
     MainWindow(QWidget *parent = nullptr);

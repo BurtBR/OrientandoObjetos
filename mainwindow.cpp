@@ -3,14 +3,14 @@
 
 #include <QFileDialog>
 #include <QMovie>
-#include "workerfilehandler.h"
+#include "workergeometry.h"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
 }
 
 MainWindow::~MainWindow(){
-    DeleteThread(&_threadFileHandler);
+    DeleteThread(&_threadGeometry);
     delete _ui;
 }
 
@@ -32,6 +32,10 @@ void MainWindow::DeleteThread(QThread **thread){
 
 bool MainWindow::Init(){
     connect(_ui->actionAbrir, &QAction::triggered, this, &MainWindow::On_actionAbrir_triggered);
+
+    if(!StartThreadGeometry())
+        return false;
+
     return true;
 }
 
@@ -41,7 +45,6 @@ void MainWindow::WorkerMessage(QString msg, ErrorMessage::ErrorCode code){
 
 void MainWindow::FileHandlingFinished(){
 
-    DeleteThread(&_threadFileHandler);
     ConsoleMessage("Arquivo carregado.");
 
     this->setEnabled(true);
@@ -52,33 +55,32 @@ void MainWindow::ConsoleMessage(QString msg){
     _ui->textConsole->append(QDateTime::currentDateTime().toString("hh:mm:ss") + " " + msg);
 }
 
-bool MainWindow::StartThreadFileHandler(){
-    if(_threadFileHandler)
+bool MainWindow::StartThreadGeometry(){
+    if(_threadGeometry)
         return false;
 
-    WorkerFileHandler *worker;
+    WorkerGeometry *worker;
 
     try{
-        worker = new WorkerFileHandler;
+        worker = new WorkerGeometry;
     }catch(...){
         return false;
     }
 
     try{
-        _threadFileHandler = new QThread;
+        _threadGeometry = new QThread;
     }catch(...){
         delete worker;
-        _threadFileHandler = nullptr;
         return false;
     }
 
-    connect(_threadFileHandler, &QThread::finished, worker, &WorkerFileHandler::deleteLater);
-    connect(worker, &WorkerFileHandler::Message, this, &MainWindow::WorkerMessage);
-    connect(worker, &WorkerFileHandler::FileHandlingFinished, this, &MainWindow::FileHandlingFinished);
-    connect(this, &MainWindow::OpenObj, worker, &WorkerFileHandler::OpenObj);
+    connect(_threadGeometry, &QThread::finished, worker, &WorkerGeometry::deleteLater);
+    connect(worker, &WorkerGeometry::Message, this, &MainWindow::WorkerMessage);
+    connect(worker, &WorkerGeometry::FileHandlingFinished, this, &MainWindow::FileHandlingFinished);
+    connect(this, &MainWindow::OpenObj, worker, &WorkerGeometry::OpenObj);
 
-    worker->moveToThread(_threadFileHandler);
-    _threadFileHandler->start();
+    worker->moveToThread(_threadGeometry);
+    _threadGeometry->start();
 
     return true;
 }
@@ -89,11 +91,6 @@ void MainWindow::On_actionAbrir_triggered(bool){
     if(!filename.size())
         return;
 
-    if(!StartThreadFileHandler()){
-        ConsoleMessage(ErrorMessage::GetErrorStr(ErrorMessage::ErrorCode::FailedToAllocate));
-        return;
-    }
-
     this->setEnabled(false);
     QMovie *movie;
 
@@ -103,8 +100,6 @@ void MainWindow::On_actionAbrir_triggered(bool){
         emit OpenObj(filename);
         return;
     }
-
-    connect(_threadFileHandler, &QThread::finished, movie, &QMovie::deleteLater);
 
     _ui->labelGif->setMovie(movie);
     _ui->labelGif->setScaledContents(true);

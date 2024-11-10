@@ -25,12 +25,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         resource.qrc
-        workerfilehandler.h workerfilehandler.cpp
+
         errormessage.h errormessage.cpp
         openglwidget.h openglwidget.cpp
         vertice.h vertice.cpp
         edge.h edge.cpp
         face.h face.cpp
+        workergeometry.h workergeometry.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET OrientandoObjetos APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
