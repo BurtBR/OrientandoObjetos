@@ -5,6 +5,9 @@
 #include <QDateTime>
 #include <QThread>
 #include "errormessage.h"
+#include "vertice.h"
+#include "edge.h"
+#include "face.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

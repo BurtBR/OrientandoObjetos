@@ -28,6 +28,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         workerfilehandler.h workerfilehandler.cpp
         errormessage.h errormessage.cpp
         openglwidget.h openglwidget.cpp
+        vertice.h vertice.cpp
+        edge.h edge.cpp
+        face.h face.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET OrientandoObjetos APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
