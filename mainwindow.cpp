@@ -40,12 +40,12 @@ bool MainWindow::Init(){
 }
 
 void MainWindow::WorkerMessage(QString msg, ErrorMessage::ErrorCode code){
-    ConsoleMessage(ErrorMessage::GetErrorStr(code) + msg);
+    ConsoleMessage(ErrorMessage::GetErrorStr(code) + " " + msg);
 }
 
 void MainWindow::FileHandlingFinished(){
 
-    ConsoleMessage("Arquivo carregado.");
+    ConsoleMessage("Manipulação de arquivo concluída.");
 
     this->setEnabled(true);
     _ui->labelGif->clear();

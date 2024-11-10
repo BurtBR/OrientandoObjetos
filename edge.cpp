@@ -4,14 +4,15 @@ Edge::Edge(Vertice *vertice_Origin, Vertice *vertice_Destination,
            Face *face_left, Face *face_right,
            Edge *left_in, Edge *left_out,
            Edge *right_in, Edge *right_out){
-    _vOrigin = vertice_Origin;
-    _vDestination = vertice_Destination;
-    _fLeft = face_left;
-    _fRight = face_right;
-    _eLeft_In = left_in;
-    _eLeft_Out = left_out;
-    _eRight_In = right_in;
-    _eRight_Out = right_out;
+
+    SetVerticeOrigin(vertice_Origin);
+    SetVerticeDestination(vertice_Destination);
+    SetFaceLeft(face_left);
+    SetFaceRight(face_right);
+    SetEdgeLeftIn(left_in);
+    SetEdgeLeftOut(left_out);
+    SetEdgeRightIn(right_in);
+    SetEdgeRightOut(right_out);
 }
 
 void Edge::SetVerticeOrigin(Vertice *v){
@@ -46,34 +47,34 @@ void Edge::SetEdgeRightOut(Edge *e){
     _eRight_Out = e;
 }
 
-Vertice &Edge::GetVerticeOrigin(){
+Vertice &Edge::GetVerticeOrigin() const{
     return *_vOrigin;
 }
 
-Vertice &Edge::GetVerticeDestination(){
+Vertice &Edge::GetVerticeDestination() const{
     return *_vDestination;
 }
 
-Face &Edge::GetFaceLeft(){
+Face &Edge::GetFaceLeft() const{
     return *_fLeft;
 }
 
-Face &Edge::GetFaceRight(){
+Face &Edge::GetFaceRight() const{
     return *_fRight;
 }
 
-Edge &Edge::GetEdgeLeftIn(){
+Edge &Edge::GetEdgeLeftIn() const{
     return *_eLeft_In;
 }
 
-Edge &Edge::GetEdgeLeftOut(){
+Edge &Edge::GetEdgeLeftOut() const{
     return *_eLeft_Out;
 }
 
-Edge &Edge::GetEdgeRightIn(){
+Edge &Edge::GetEdgeRightIn() const{
     return *_eRight_In;
 }
 
-Edge &Edge::GetEdgeRightOut(){
+Edge &Edge::GetEdgeRightOut() const{
     return *_eRight_Out;
 }

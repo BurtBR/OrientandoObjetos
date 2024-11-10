@@ -2,6 +2,7 @@
 #define WORKERGEOMETRY_H
 
 #include <QObject>
+#include <QSet>
 #include "errormessage.h"
 #include "vertice.h"
 #include "edge.h"
@@ -10,7 +11,11 @@
 class WorkerGeometry : public QObject{
     Q_OBJECT
 private:
+    QSet<Vertice> _vertices;
+    QSet<Edge> _edges;
+    QSet<Face> _faces;
 
+    bool StrToFloat(const QString &str, float &number);
 
 public:
     WorkerGeometry(QObject *parent = nullptr);
