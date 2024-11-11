@@ -36,7 +36,9 @@ public:
 
 inline bool operator==(const Edge &v1, const Edge &v2){
     return ( (v1.GetVerticeOrigin() == v2.GetVerticeOrigin()) &&
-             (v1.GetVerticeDestination() == v2.GetVerticeDestination()) );
+             (v1.GetVerticeDestination() == v2.GetVerticeDestination()) ) ||
+           ( (v1.GetVerticeOrigin() == v2.GetVerticeDestination())&&
+             (v1.GetVerticeDestination() == v2.GetVerticeOrigin()) );
 }
 
 inline size_t qHash(const Edge &key, size_t seed){

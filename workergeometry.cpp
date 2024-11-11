@@ -22,8 +22,9 @@ void WorkerGeometry::OpenObj(QString filename){
     QFile fp(filename);
     QFileInfo fileinfo(fp);
     QStringList strlist;
-    QVector<QSet<Vertice>::Iterator> vertice_arr;
-    float faux, x, y, z;
+    float x, y, z;
+    size_t idx;
+    Vertice *origin, *destination, *firstvertice;
 
     if(!fileinfo.exists()){
         emit Message("O arquivo não existe", ErrorMessage::ErrorCode::FailedToOpenFile);
@@ -48,8 +49,6 @@ void WorkerGeometry::OpenObj(QString filename){
         if(strlist[0].size()){
             strlist = strlist[0].split(' ', Qt::SkipEmptyParts);
 
-            //qDebug() << strlist;
-
             switch(strlist[0][0].toLatin1()){
 
             case 'p': // Point
@@ -69,13 +68,8 @@ void WorkerGeometry::OpenObj(QString filename){
                         emit Message("Formatação incompatível de ponto flutuante: " +
                                      strlist[1] + " " + strlist[2] + " " + strlist[3],
                                      ErrorMessage::ErrorCode::CorruptedFile);
-                    else if(!_vertices.contains(Vertice(x,y,z))){
-                        vertice_arr.append(_vertices.insert(Vertice(x,y,z)));
-                    }else{
-                        emit Message("Vértices duplicados no arquivo: " +
-                                     strlist[1] + " " + strlist[2] + " " + strlist[3],
-                                     ErrorMessage::ErrorCode::CorruptedFile);
-                        vertice_arr.append(vertice_arr.last());
+                    else{
+                        _vertices.append(Vertice(x,y,z));
                     }
 
                 }else{
@@ -90,8 +84,49 @@ void WorkerGeometry::OpenObj(QString filename){
                 break;
 
             case 'f': // Face
-                for(int i=1; i<strlist.size() ;i++){
+                if(strlist.size() < 4){
+                    emit Message("São necessários ao menos 3 pontos em uma face.", ErrorMessage::ErrorCode::CorruptedFile);
+                    break;
+                }
+                idx = strlist[1].split('/')[0].toLongLong()-1;
+                if(idx >= _vertices.size()){
+                    emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+                    break;
+                }
 
+                firstvertice = &_vertices[idx];
+                origin = firstvertice;
+
+                idx = strlist[2].split('/')[0].toLongLong()-1;
+                if(idx >= _vertices.size()){
+                    emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+                    break;
+                }
+
+                destination = &_vertices[idx];
+
+                _edges.append(Edge(origin, destination));
+                _faces.append(Face(&_edges.last()));
+                destination->SetIncidentEdge(&_edges.last());
+
+                for(int i=3; i<strlist.size() ;i++){
+                    origin = destination;
+                    idx = strlist[i].split('/')[0].toLongLong()-1;
+                    if(idx >= _vertices.size()){
+                        qDebug() << "Indice invalido" << idx;
+                        emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+                    }else{
+                        destination = &_vertices[idx];
+                        _edges.append(Edge(origin, destination));
+                        destination->SetIncidentEdge(&_edges.last());
+                    }
+                }
+
+                if(destination != firstvertice){
+                    origin = destination;
+                    destination = firstvertice;
+                    _edges.append(Edge(origin, destination));
+                    destination->SetIncidentEdge(&_edges.last());
                 }
                 break;
 
@@ -105,11 +140,12 @@ void WorkerGeometry::OpenObj(QString filename){
         }
     }
 
-    //TEMP
-    for(int i=0; i<vertice_arr.size() ;i++){
-        qDebug() << vertice_arr[i]->GetX() << vertice_arr[i]->GetY() << vertice_arr[i]->GetZ();
-    }
-
     fp.close();
+
+    emit Message("O arquivo contém " +
+                 QString::number(_vertices.size()) + " vértices, " +
+                 QString::number(_edges.size()) + " arestas e " +
+                 QString::number(_faces.size()) + " faces.");
+
     emit FileHandlingFinished();
 }

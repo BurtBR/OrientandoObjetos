@@ -11,9 +11,9 @@
 class WorkerGeometry : public QObject{
     Q_OBJECT
 private:
-    QSet<Vertice> _vertices;
-    QSet<Edge> _edges;
-    QSet<Face> _faces;
+    QVector<Vertice> _vertices;
+    QVector<Edge> _edges;
+    QVector<Face> _faces;
 
     bool StrToFloat(const QString &str, float &number);
 
