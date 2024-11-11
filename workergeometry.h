@@ -16,6 +16,7 @@ private:
     QVector<Face> _faces;
 
     bool StrToFloat(const QString &str, float &number);
+    void ParseFileData();
 
 public:
     WorkerGeometry(QObject *parent = nullptr);

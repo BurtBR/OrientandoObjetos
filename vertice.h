@@ -1,6 +1,9 @@
 #ifndef VERTICE_H
 #define VERTICE_H
 
+// TEMP
+#include <QDebug>
+
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -15,6 +18,8 @@ public:
     Vertice(float x=0, float y=0, float z=0, float w = 1.0, Edge *incidentedge = nullptr);
     Vertice(const Vertice &other);
 
+    bool operator==(const Vertice &other);
+
     void SetX(float x);
     void SetY(float y);
     void SetZ(float z);
@@ -25,14 +30,16 @@ public:
     float GetY() const;
     float GetZ() const;
     float GetW() const;
-    Edge &GetIncidentEdge();
+    Edge *GetIncidentEdge();
 };
 
 inline bool operator==(const Vertice &v1, const Vertice &v2){
-    return(v1.GetX() == v2.GetX() &&
-            v1.GetY() == v2.GetY() &&
-            v1.GetY() == v2.GetZ() &&
-            v1.GetW() == v2.GetW());
+    bool result = ( (v1.GetX() == v2.GetX()) &&
+                   (v1.GetY() == v2.GetY()) &&
+                   (v1.GetZ() == v2.GetZ()) &&
+                   (v1.GetW() == v2.GetW()) );
+
+    return result;
 }
 
 inline size_t qHash(const Vertice &key, size_t seed){
