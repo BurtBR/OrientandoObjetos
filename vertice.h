@@ -42,15 +42,4 @@ inline bool operator==(const Vertice &v1, const Vertice &v2){
     return result;
 }
 
-inline size_t qHash(const Vertice &key, size_t seed){
-    uint32_t x,y,z,w;
-
-    x = ( ((uint32_t)key.GetX()%256) << 24U ) & 0xFF000000;
-    y = ( ((uint32_t)key.GetY()%256) << 16U ) & 0x00FF0000;
-    z = ( ((uint32_t)key.GetZ()%256) << 8U )  & 0x0000FF00;
-    w = ( ((uint32_t)key.GetW()%256) & 0x000000FF );
-
-    return qHash((x|y|z|w), seed);
-}
-
 #endif // VERTICE_H

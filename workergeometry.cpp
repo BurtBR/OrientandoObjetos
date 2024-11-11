@@ -28,13 +28,45 @@ void WorkerGeometry::ParseFileData(){
     for(int i=0; i<_edges.size() ;i++){
         emit Message("Aresta " + QString::number(i) + ": " +
                      "Origem "+ QString::number(_edges[i].GetVerticeOrigin()) +
-                     ", Destino " + QString::number(_edges[i].GetVerticeDestination()) );
+                     ", Destino " + QString::number(_edges[i].GetVerticeDestination()) +
+                     ", DirIn " + QString::number(_edges[i].GetEdgeRightIn()) +
+                     ", DirOut " + QString::number(_edges[i].GetEdgeRightOut()) +
+                     ", Face " + QString::number(_edges[i].GetFaceRight()));
     }
 
     for(int i=0; i<_faces.size() ;i++){
         emit Message("Face " + QString::number(i) +
                      ", Aresta " + QString::number(_faces[i].GetEdge()));
     }
+
+    QVector<Vertice> verticeaux;
+    QVector<Edge> edgesaux;
+
+    for(int i=0; i<_vertices.size() ;i++){
+        if(!verticeaux.contains(_vertices[i]))
+            verticeaux.append(_vertices[i]);
+        else
+            emit Message("Vértice duplicado no arquivo: " +
+                         QString::number(_vertices[i].GetX()) + " " +
+                         QString::number(_vertices[i].GetY()) + " " +
+                         QString::number(_vertices[i].GetZ()), ErrorMessage::ErrorCode::CorruptedFile);
+    }
+
+    if(!_faces.size()){
+        _edges.clear();
+        _vertices.clear();
+        _faces.clear();
+        emit Message("Objetos necessitam ao menos uma face.", ErrorMessage::ErrorCode::CorruptedFile);
+        return;
+    }
+
+
+
+    emit Message("O arquivo contém " +
+                 QString::number(_vertices.size()) + " vértices, " +
+                 QString::number(_edges.size()) + " arestas e " +
+                 QString::number(_faces.size()) + " faces.");
+
 }
 
 void WorkerGeometry::OpenObj(QString filename){
@@ -43,7 +75,7 @@ void WorkerGeometry::OpenObj(QString filename){
     QFileInfo fileinfo(fp);
     QStringList strlist;
     float x, y, z;
-    size_t idx, origin, destination, firstvertice, currface;
+    size_t idx, origin, destination, firstvertice, firstedge;
 
     if(!fileinfo.exists()){
         emit Message("O arquivo não existe", ErrorMessage::ErrorCode::FailedToOpenFile);
@@ -124,13 +156,10 @@ void WorkerGeometry::OpenObj(QString filename){
 
                 destination = idx;
 
-                _edges.append(Edge(origin, destination));
+                _edges.append(Edge(origin, destination, -1, _faces.size()));
                 _faces.append(Face(_edges.size()-1));
 
-                currface = (_faces.size()-1);
-
-                _edges.last().SetFaceRight(currface);
-                _vertices[destination].SetIncidentEdge(_edges.size()-1);
+                firstedge = (_edges.size()-1);
 
                 for(int i=3; i<strlist.size() ;i++){
                     origin = destination;
@@ -139,22 +168,22 @@ void WorkerGeometry::OpenObj(QString filename){
                         emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
                     }else{
                         destination = idx;
-                        _edges.append(Edge(origin, destination));
-                        _vertices[destination].SetIncidentEdge(_edges.size()-1);
-                        _edges.last().SetFaceRight(currface);
-                        _edges.last().SetEdgeRightIn(_vertices[origin].GetIncidentEdge());
-                        _edges[_vertices[origin].GetIncidentEdge()].SetEdgeRightOut(_edges.size()-1);
+                        _edges.last().SetEdgeRightOut(_edges.size());
+                        _edges.append(Edge(origin, destination, -1, _faces.size()-1, -1, -1, _edges.size()-1));
                     }
                 }
 
                 if(destination != firstvertice){
                     origin = destination;
                     destination = firstvertice;
-                    _edges.append(Edge(origin, destination));
-                    _vertices[destination].SetIncidentEdge(_edges.size()-1);
-                    _edges.last().SetFaceRight(currface);
-                    _edges.last().SetEdgeRightIn(_vertices[origin].GetIncidentEdge());
+                    _edges.last().SetEdgeRightOut(_edges.size());
+                    _edges.append(Edge(origin, destination, -1, _faces.size()-1, -1, -1, _edges.size()-1, firstedge));
+                }else{
+                    _edges.last().SetEdgeRightOut(firstedge);
                 }
+
+                _edges[firstedge].SetEdgeRightIn(_edges.size()-1);
+
                 break;
 
             case '#':
@@ -168,11 +197,6 @@ void WorkerGeometry::OpenObj(QString filename){
     }
 
     fp.close();
-
-    emit Message("O arquivo contém " +
-                 QString::number(_vertices.size()) + " vértices, " +
-                 QString::number(_edges.size()) + " arestas e " +
-                 QString::number(_faces.size()) + " faces.");
 
     ParseFileData();
 
