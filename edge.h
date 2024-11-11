@@ -30,11 +30,4 @@ public:
     size_t GetEdgeRightOut() const;
 };
 
-inline bool operator==(const Edge &v1, const Edge &v2){
-    return ( (v1.GetVerticeOrigin() == v2.GetVerticeOrigin()) &&
-             (v1.GetVerticeDestination() == v2.GetVerticeDestination()) ) ||
-           ( (v1.GetVerticeOrigin() == v2.GetVerticeDestination())&&
-             (v1.GetVerticeDestination() == v2.GetVerticeOrigin()) );
-}
-
 #endif // EDGE_H

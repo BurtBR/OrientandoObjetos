@@ -17,7 +17,7 @@ Vertice::Vertice(const Vertice &other){
     SetIncidentEdge(other._incident);
 }
 
-bool Vertice::operator==(const Vertice &other){
+bool Vertice::operator==(const Vertice &other) const{
     return(_x == other._x &&
            _y == other._y &&
            _z == other._z &&
