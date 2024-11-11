@@ -1,37 +1,33 @@
 #ifndef EDGE_H
 #define EDGE_H
 
-#include "vertice.h"
-
-class Face;
+#include <cstddef>
 
 class Edge{
 private:
-    Vertice *_vOrigin = nullptr, *_vDestination = nullptr;
-    Face *_fLeft = nullptr, *_fRight = nullptr;
-    Edge *_eLeft_In = nullptr, *_eLeft_Out = nullptr, *_eRight_In = nullptr, *_eRight_Out = nullptr;
+    size_t _vOrigin, _vDestination, _fLeft, _fRight, _eLeft_In, _eLeft_Out, _eRight_In, _eRight_Out;
 public:
-    Edge(Vertice *vertice_Origin = nullptr, Vertice *vertice_Destination = nullptr,
-         Face *face_left = nullptr, Face *face_right = nullptr,
-         Edge *left_in = nullptr, Edge *left_out = nullptr,
-         Edge *right_in = nullptr, Edge *right_out = nullptr);
+    Edge(size_t vertice_Origin = -1, size_t vertice_Destination = -1,
+         size_t face_left = -1, size_t face_right = -1,
+         size_t left_in = -1, size_t left_out = -1,
+         size_t right_in = -1, size_t right_out = -1);
 
-    void SetVerticeOrigin(Vertice *v);
-    void SetVerticeDestination(Vertice *v);
-    void SetFaceLeft(Face *f);
-    void SetFaceRight(Face *f);
-    void SetEdgeLeftIn(Edge *e);
-    void SetEdgeLeftOut(Edge *e);
-    void SetEdgeRightIn(Edge *e);
-    void SetEdgeRightOut(Edge *e);
-    Vertice &GetVerticeOrigin() const;
-    Vertice &GetVerticeDestination() const;
-    Face &GetFaceLeft() const;
-    Face &GetFaceRight() const;
-    Edge &GetEdgeLeftIn() const;
-    Edge &GetEdgeLeftOut() const;
-    Edge &GetEdgeRightIn() const;
-    Edge &GetEdgeRightOut() const;
+    void SetVerticeOrigin(size_t v);
+    void SetVerticeDestination(size_t v);
+    void SetFaceLeft(size_t f);
+    void SetFaceRight(size_t f);
+    void SetEdgeLeftIn(size_t e);
+    void SetEdgeLeftOut(size_t e);
+    void SetEdgeRightIn(size_t e);
+    void SetEdgeRightOut(size_t e);
+    size_t GetVerticeOrigin() const;
+    size_t GetVerticeDestination() const;
+    size_t GetFaceLeft() const;
+    size_t GetFaceRight() const;
+    size_t GetEdgeLeftIn() const;
+    size_t GetEdgeLeftOut() const;
+    size_t GetEdgeRightIn() const;
+    size_t GetEdgeRightOut() const;
 };
 
 inline bool operator==(const Edge &v1, const Edge &v2){
@@ -39,15 +35,6 @@ inline bool operator==(const Edge &v1, const Edge &v2){
              (v1.GetVerticeDestination() == v2.GetVerticeDestination()) ) ||
            ( (v1.GetVerticeOrigin() == v2.GetVerticeDestination())&&
              (v1.GetVerticeDestination() == v2.GetVerticeOrigin()) );
-}
-
-inline size_t qHash(const Edge &key, size_t seed){
-    uint32_t v1, v2;
-
-    v1 = qHash(key.GetVerticeOrigin(),seed);
-    v2 = qHash(key.GetVerticeDestination(),seed);
-
-    return qHash((v1^v2), seed);
 }
 
 #endif // EDGE_H

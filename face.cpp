@@ -1,13 +1,13 @@
 #include "face.h"
 
-Face::Face(Edge *edge){
+Face::Face(size_t edge){
     SetEdge(edge);
 }
 
-void Face::SetEdge(Edge *e){
+void Face::SetEdge(size_t e){
     _edge = e;
 }
 
-Edge &Face::GetEdge() const{
-    return *_edge;
+size_t Face::GetEdge() const{
+    return _edge;
 }

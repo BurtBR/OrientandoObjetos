@@ -1,12 +1,12 @@
 #include "vertice.h"
 
 
-Vertice::Vertice(float x, float y, float z, float w, Edge *incidentedge){
+Vertice::Vertice(float x, float y, float z, float w, size_t incident){
     SetX(x);
     SetY(y);
     SetZ(z);
     SetW(w);
-    SetIncidentEdge(incidentedge);
+    SetIncidentEdge(incident);
 }
 
 Vertice::Vertice(const Vertice &other){
@@ -47,7 +47,7 @@ void Vertice::SetXYZW(float x, float y, float z, float w){
     SetW(w);
 }
 
-void Vertice::SetIncidentEdge(Edge *e){
+void Vertice::SetIncidentEdge(size_t e){
     _incident = e;
 }
 
@@ -67,6 +67,6 @@ float Vertice::GetW() const{
     return _w;
 }
 
-Edge *Vertice::GetIncidentEdge(){
+size_t Vertice::GetIncidentEdge(){
     return _incident;
 }

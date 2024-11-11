@@ -22,21 +22,18 @@ void WorkerGeometry::ParseFileData(){
         emit Message("Vértice " + QString::number(i) + ": " +
                      QString::number(_vertices[i].GetX()) + " " +
                      QString::number(_vertices[i].GetY()) + " " +
-                     QString::number(_vertices[i].GetZ()) + " Addr: " + QString::number((uint64_t)(&_vertices[i]), 16));
+                     QString::number(_vertices[i].GetZ()) );
     }
 
     for(int i=0; i<_edges.size() ;i++){
-        emit Message("Aresta " + QString::number(i) + " (" + QString::number((uint64_t)&_edges[i], 16) + ")" + ": " +
-                     "Origem "+ QString::number(_vertices.indexOf(_edges[i].GetVerticeOrigin())) +
-                     " (" + QString::number((uint64_t)(&_edges[i].GetVerticeOrigin()), 16) + ")" +
-                     ", Destino " + QString::number(_vertices.indexOf(_edges[i].GetVerticeDestination()))+
-                     " (" + QString::number((uint64_t)(&_edges[i].GetVerticeDestination()), 16) + ")");
+        emit Message("Aresta " + QString::number(i) + ": " +
+                     "Origem "+ QString::number(_edges[i].GetVerticeOrigin()) +
+                     ", Destino " + QString::number(_edges[i].GetVerticeDestination()) );
     }
 
     for(int i=0; i<_faces.size() ;i++){
         emit Message("Face " + QString::number(i) +
-                     //": Aresta " + QString::number(_edges.indexOf(_faces[i].GetEdge())) +
-                     " (" + QString::number((uint64_t)&_faces[i].GetEdge(), 16) + ")");
+                     ", Aresta " + QString::number(_faces[i].GetEdge()));
     }
 }
 
@@ -46,9 +43,7 @@ void WorkerGeometry::OpenObj(QString filename){
     QFileInfo fileinfo(fp);
     QStringList strlist;
     float x, y, z;
-    size_t idx;
-    Vertice *origin, *destination, *firstvertice;
-    Face *currface;
+    size_t idx, origin, destination, firstvertice, currface;
 
     if(!fileinfo.exists()){
         emit Message("O arquivo não existe", ErrorMessage::ErrorCode::FailedToOpenFile);
@@ -118,7 +113,7 @@ void WorkerGeometry::OpenObj(QString filename){
                     break;
                 }
 
-                firstvertice = &_vertices[idx];
+                firstvertice = idx;
                 origin = firstvertice;
 
                 idx = strlist[2].split('/')[0].toLongLong()-1;
@@ -127,15 +122,15 @@ void WorkerGeometry::OpenObj(QString filename){
                     break;
                 }
 
-                destination = &_vertices[idx];
+                destination = idx;
 
                 _edges.append(Edge(origin, destination));
-                _faces.append(Face(&_edges.last()));
+                _faces.append(Face(_edges.size()-1));
 
-                currface = &_faces.last();
+                currface = (_faces.size()-1);
 
                 _edges.last().SetFaceRight(currface);
-                destination->SetIncidentEdge(&_edges.last());
+                _vertices[destination].SetIncidentEdge(_edges.size()-1);
 
                 for(int i=3; i<strlist.size() ;i++){
                     origin = destination;
@@ -143,12 +138,12 @@ void WorkerGeometry::OpenObj(QString filename){
                     if(idx >= _vertices.size()){
                         emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
                     }else{
-                        destination = &_vertices[idx];
+                        destination = idx;
                         _edges.append(Edge(origin, destination));
-                        destination->SetIncidentEdge(&_edges.last());
+                        _vertices[destination].SetIncidentEdge(_edges.size()-1);
                         _edges.last().SetFaceRight(currface);
-                        _edges.last().SetEdgeRightIn(origin->GetIncidentEdge());
-                        origin->GetIncidentEdge()->SetEdgeRightOut(&_edges.last());
+                        _edges.last().SetEdgeRightIn(_vertices[origin].GetIncidentEdge());
+                        _edges[_vertices[origin].GetIncidentEdge()].SetEdgeRightOut(_edges.size()-1);
                     }
                 }
 
@@ -156,9 +151,9 @@ void WorkerGeometry::OpenObj(QString filename){
                     origin = destination;
                     destination = firstvertice;
                     _edges.append(Edge(origin, destination));
-                    destination->SetIncidentEdge(&_edges.last());
+                    _vertices[destination].SetIncidentEdge(_edges.size()-1);
                     _edges.last().SetFaceRight(currface);
-                    _edges.last().SetEdgeRightIn(origin->GetIncidentEdge());
+                    _edges.last().SetEdgeRightIn(_vertices[origin].GetIncidentEdge());
                 }
                 break;
 

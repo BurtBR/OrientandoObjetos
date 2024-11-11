@@ -1,24 +1,16 @@
 #ifndef FACE_H
 #define FACE_H
 
-#include "edge.h"
+#include <cstddef>
 
 class Face{
 private:
-    Edge *_edge = nullptr;
+    size_t _edge = -1;
 public:
-    Face(Edge *edge = nullptr);
+    Face(size_t edge = -1);
 
-    void SetEdge(Edge *e);
-    Edge &GetEdge() const;
+    void SetEdge(size_t e);
+    size_t GetEdge() const;
 };
-
-inline bool operator==(const Face &v1, const Face &v2){
-    return ( v1 == v2 );
-}
-
-inline size_t qHash(const Face &key, size_t seed){
-    return qHash(key.GetEdge(), seed);
-}
 
 #endif // FACE_H

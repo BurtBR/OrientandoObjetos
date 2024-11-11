@@ -13,9 +13,9 @@ class Edge;
 class Vertice{
 private:
     float _x=0, _y=0, _z=1, _w = 1.0;
-    Edge *_incident = nullptr;
+    size_t _incident;
 public:
-    Vertice(float x=0, float y=0, float z=0, float w = 1.0, Edge *incidentedge = nullptr);
+    Vertice(float x=0, float y=0, float z=0, float w = 1.0, size_t incident = -1);
     Vertice(const Vertice &other);
 
     bool operator==(const Vertice &other);
@@ -25,12 +25,12 @@ public:
     void SetZ(float z);
     void SetW(float w);
     void SetXYZW(float x, float y, float z, float w);
-    void SetIncidentEdge(Edge *e);
+    void SetIncidentEdge(size_t e);
     float GetX() const;
     float GetY() const;
     float GetZ() const;
     float GetW() const;
-    Edge *GetIncidentEdge();
+    size_t GetIncidentEdge();
 };
 
 inline bool operator==(const Vertice &v1, const Vertice &v2){

@@ -1,9 +1,9 @@
 #include "edge.h"
 
-Edge::Edge(Vertice *vertice_Origin, Vertice *vertice_Destination,
-           Face *face_left, Face *face_right,
-           Edge *left_in, Edge *left_out,
-           Edge *right_in, Edge *right_out){
+Edge::Edge(size_t vertice_Origin, size_t vertice_Destination,
+           size_t face_left, size_t face_right,
+           size_t left_in, size_t left_out,
+           size_t right_in, size_t right_out){
 
     SetVerticeOrigin(vertice_Origin);
     SetVerticeDestination(vertice_Destination);
@@ -15,66 +15,66 @@ Edge::Edge(Vertice *vertice_Origin, Vertice *vertice_Destination,
     SetEdgeRightOut(right_out);
 }
 
-void Edge::SetVerticeOrigin(Vertice *v){
+void Edge::SetVerticeOrigin(size_t v){
     _vOrigin = v;
 }
 
-void Edge::SetVerticeDestination(Vertice *v){
+void Edge::SetVerticeDestination(size_t v){
     _vDestination = v;
 }
 
-void Edge::SetFaceLeft(Face *f){
+void Edge::SetFaceLeft(size_t f){
     _fLeft = f;
 }
 
-void Edge::SetFaceRight(Face *f){
+void Edge::SetFaceRight(size_t f){
     _fRight = f;
 }
 
-void Edge::SetEdgeLeftIn(Edge *e){
+void Edge::SetEdgeLeftIn(size_t e){
     _eLeft_In = e;
 }
 
-void Edge::SetEdgeLeftOut(Edge *e){
+void Edge::SetEdgeLeftOut(size_t e){
     _eLeft_Out = e;
 }
 
-void Edge::SetEdgeRightIn(Edge *e){
+void Edge::SetEdgeRightIn(size_t e){
     _eRight_In = e;
 }
 
-void Edge::SetEdgeRightOut(Edge *e){
+void Edge::SetEdgeRightOut(size_t e){
     _eRight_Out = e;
 }
 
-Vertice &Edge::GetVerticeOrigin() const{
-    return *_vOrigin;
+size_t Edge::GetVerticeOrigin() const{
+    return _vOrigin;
 }
 
-Vertice &Edge::GetVerticeDestination() const{
-    return *_vDestination;
+size_t Edge::GetVerticeDestination() const{
+    return _vDestination;
 }
 
-Face &Edge::GetFaceLeft() const{
-    return *_fLeft;
+size_t Edge::GetFaceLeft() const{
+    return _fLeft;
 }
 
-Face &Edge::GetFaceRight() const{
-    return *_fRight;
+size_t Edge::GetFaceRight() const{
+    return _fRight;
 }
 
-Edge &Edge::GetEdgeLeftIn() const{
-    return *_eLeft_In;
+size_t Edge::GetEdgeLeftIn() const{
+    return _eLeft_In;
 }
 
-Edge &Edge::GetEdgeLeftOut() const{
-    return *_eLeft_Out;
+size_t Edge::GetEdgeLeftOut() const{
+    return _eLeft_Out;
 }
 
-Edge &Edge::GetEdgeRightIn() const{
-    return *_eRight_In;
+size_t Edge::GetEdgeRightIn() const{
+    return _eRight_In;
 }
 
-Edge &Edge::GetEdgeRightOut() const{
-    return *_eRight_Out;
+size_t Edge::GetEdgeRightOut() const{
+    return _eRight_Out;
 }
