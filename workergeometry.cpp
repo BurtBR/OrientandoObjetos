@@ -73,7 +73,7 @@ void WorkerGeometry::OpenObj(QString filename){
 
     QFile fp(filename);
     QFileInfo fileinfo(fp);
-    QStringList strlist;
+    QStringList strlist, unknownparameters;
     float x, y, z;
     size_t idx, origin, destination, firstvertice, firstedge;
 
@@ -102,14 +102,6 @@ void WorkerGeometry::OpenObj(QString filename){
 
             switch(strlist[0][0].toLatin1()){
 
-            case 'p': // Point
-                emit Message("\"" + strlist[0] + "\" não implementado.", ErrorMessage::ErrorCode::CorruptedFile);
-                break;
-
-            case 'l': // Line
-                emit Message("\"" + strlist[0] + "\" não implementado.", ErrorMessage::ErrorCode::CorruptedFile);
-                break;
-
             case 'v':
                 if(strlist.size() != 4){
                     emit Message("Valores incompatíveis de " + strlist[0], ErrorMessage::ErrorCode::CorruptedFile);
@@ -128,7 +120,8 @@ void WorkerGeometry::OpenObj(QString filename){
                     //case 'n':
                     //case 't':
                     default:
-                        emit Message("\"" + strlist[0] + "\" não implementado.", ErrorMessage::ErrorCode::CorruptedFile);
+                        if(!unknownparameters.contains(strlist[0]))
+                            unknownparameters.append(strlist[0]);
                         break;
                     }
                 }
@@ -190,13 +183,19 @@ void WorkerGeometry::OpenObj(QString filename){
                 break;
 
             default:
-                emit Message("\"" + strlist[0] + "\" não implementado.", ErrorMessage::ErrorCode::CorruptedFile);
+                if(!unknownparameters.contains(strlist[0]))
+                    unknownparameters.append(strlist[0]);
                 break;
             }
         }
     }
 
     fp.close();
+
+    if(unknownparameters.size())
+        emit Message("Parâmetros \"" + unknownparameters.join("\" \"") + "\" não implementados.", ErrorMessage::ErrorCode::CorruptedFile);
+
+    unknownparameters.clear();
 
     ParseFileData();
 
