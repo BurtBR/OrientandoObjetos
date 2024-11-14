@@ -3,6 +3,9 @@
 
 #include <cstddef>
 
+// TEMP
+#include <QDebug>
+
 class Edge{
 private:
     size_t _vOrigin, _vDestination, _fLeft, _fRight, _eLeft_In, _eLeft_Out, _eRight_In, _eRight_Out;
@@ -11,6 +14,8 @@ public:
          size_t face_left = -1, size_t face_right = -1,
          size_t left_in = -1, size_t left_out = -1,
          size_t right_in = -1, size_t right_out = -1);
+
+    bool operator==(const Edge &other) const;
 
     void SetVerticeOrigin(size_t v);
     void SetVerticeDestination(size_t v);

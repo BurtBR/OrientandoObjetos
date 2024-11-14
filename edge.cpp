@@ -15,6 +15,17 @@ Edge::Edge(size_t vertice_Origin, size_t vertice_Destination,
     SetEdgeRightOut(right_out);
 }
 
+bool Edge::operator==(const Edge &other) const{
+
+    if(_vOrigin == other._vOrigin && _vDestination == other._vDestination)
+        return true;
+
+    if(_vOrigin == other._vDestination && _vDestination == other._vOrigin)
+        return true;
+
+    return false;
+}
+
 void Edge::SetVerticeOrigin(size_t v){
     _vOrigin = v;
 }
