@@ -18,9 +18,11 @@ private:
     bool StrToFloat(const QString &str, float &number);
     void ParseFileData();
     QHash<size_t, Face>::Iterator FindFaceWithEquivalentEdge(size_t edge);
+    QHash<size_t, Edge>::Iterator FindEquivalentEdge(size_t edge);
     void CheckDuplicateVertices();
     void ReplaceVerticeReference(size_t from, size_t to);
     void ReplaceEdgeReferences(size_t from, size_t to);
+    void SetFaceToSide(size_t face, bool left = true);
 
 public:
     WorkerGeometry(QObject *parent = nullptr);
