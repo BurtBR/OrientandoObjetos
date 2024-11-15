@@ -53,18 +53,21 @@ void WorkerGeometry::ParseFileData(){
                     curredge->SetFaceLeft(otherface.key());
                     otherface->SetEdge(curredge.key());
 
-                    if(otheredge->GetVerticeOrigin() == curredge->GetVerticeOrigin()){
+                    if(otheredge->GetVerticeOrigin() != curredge->GetVerticeOrigin())
+                        FlipEdge(otheredge);
+
+                    if(otheredge->GetFaceRight() == otherface.key()){
                         curredge->SetEdgeLeftIn(otheredge->GetEdgeRightOut());
                         curredge->SetEdgeLeftOut(otheredge->GetEdgeRightIn());
                     }else{
-                        curredge->SetEdgeLeftIn(otheredge->GetEdgeRightIn());
-                        curredge->SetEdgeLeftOut(otheredge->GetEdgeRightOut());
+                        curredge->SetEdgeLeftIn(otheredge->GetEdgeLeftIn());
+                        curredge->SetEdgeLeftOut(otheredge->GetEdgeLeftOut());
                     }
 
                     ReplaceEdgeReferences(otheredge.key(), curredge.key());
                     _edges.erase((QHash<size_t, Edge>::ConstIterator) otheredge);
 
-                    //SetFaceToSide(otherface.key(), true);
+                    SetFaceToSide(otherface.key(), true);
                 }
 
                 _vertices.find(curredge->GetVerticeOrigin())->SetIncidentEdge(curredge.key());
@@ -86,18 +89,21 @@ void WorkerGeometry::ParseFileData(){
                     curredge->SetFaceLeft(otherface.key());
                     otherface->SetEdge(curredge.key());
 
-                    if(otheredge->GetVerticeOrigin() == curredge->GetVerticeOrigin()){
+                    if(otheredge->GetVerticeOrigin() != curredge->GetVerticeOrigin())
+                        FlipEdge(otheredge);
+
+                    if(otheredge->GetFaceRight() == otherface.key()){
+                        curredge->SetEdgeRightIn(otheredge->GetEdgeRightIn());
+                        curredge->SetEdgeRightOut(otheredge->GetEdgeRightOut());
+                    }else{
                         curredge->SetEdgeRightIn(otheredge->GetEdgeLeftOut());
                         curredge->SetEdgeRightOut(otheredge->GetEdgeLeftIn());
-                    }else{
-                        curredge->SetEdgeRightIn(otheredge->GetEdgeLeftIn());
-                        curredge->SetEdgeRightOut(otheredge->GetEdgeLeftOut());
                     }
 
                     ReplaceEdgeReferences(otheredge.key(), curredge.key());
                     _edges.erase((QHash<size_t, Edge>::ConstIterator) otheredge);
 
-                    //SetFaceToSide(otherface.key(), false);
+                    SetFaceToSide(otherface.key(), false);
                 }
 
                 curredge = _edges.find(curredge->GetEdgeLeftOut());
@@ -118,24 +124,6 @@ void WorkerGeometry::ParseFileData(){
                  QString::number(_edges.size()) + " arestas e " +
                  QString::number(_faces.size()) + " faces.");
 
-}
-
-QHash<size_t, Face>::Iterator WorkerGeometry::FindFaceWithEquivalentEdge(size_t edge){
-
-    QHash<size_t, Edge>::Iterator itr = _edges.begin(), equivalent = _edges.find(edge);
-
-    while(itr != _edges.end()){
-        // Different ID but same edge
-        if((itr.key() != equivalent.key()) && (itr.value() == equivalent.value())){
-            if(itr->GetFaceRight() != -1)
-                return _faces.find(itr->GetFaceRight());
-            else
-                return _faces.find(itr->GetFaceLeft());
-        }
-        itr++;
-    }
-
-    return _faces.end();
 }
 
 QHash<size_t, Edge>::Iterator WorkerGeometry::FindEquivalentEdge(size_t edge){
@@ -225,47 +213,45 @@ void WorkerGeometry::ReplaceEdgeReferences(size_t from, size_t to){
 
 void WorkerGeometry::SetFaceToSide(size_t face, bool left){
 
-    qDebug() << "Face: " << face << "Dir: " << (left ? "Left" : "Right");
-
-    QHash<size_t, Face>::Iterator f = _faces.find(face);
-    QHash<size_t, Edge>::Iterator startedge = _edges.find(f->GetEdge()), curredge;
-    size_t aux;
+    QHash<size_t, Edge>::Iterator startedge = _edges.find(_faces.find(face)->GetEdge()), curredge;
 
     curredge = startedge;
 
-    qDebug() << " Start edge: " << startedge.key();
-
     do{
 
-        qDebug() << " Curr edge: " << curredge.key();
-
         if(left){
-            if(curredge->GetFaceLeft() != face){
-                aux = curredge->GetEdgeLeftIn();
-                curredge->SetEdgeLeftIn(curredge->GetEdgeRightOut());
-                curredge->SetEdgeRightOut(aux);
-
-                aux = curredge->GetEdgeLeftOut();
-                curredge->SetEdgeLeftOut(curredge->GetEdgeRightIn());
-                curredge->SetEdgeRightIn(aux);
-            }
+            if(curredge->GetFaceLeft() != face)
+                FlipEdge(curredge);
 
             curredge = _edges.find(curredge->GetEdgeLeftOut());
         }else{
-            if(curredge->GetFaceRight() != face){
-                aux = curredge->GetEdgeLeftIn();
-                curredge->SetEdgeLeftIn(curredge->GetEdgeRightOut());
-                curredge->SetEdgeRightOut(aux);
-
-                aux = curredge->GetEdgeLeftOut();
-                curredge->SetEdgeLeftOut(curredge->GetEdgeRightIn());
-                curredge->SetEdgeRightIn(aux);
-            }
+            if(curredge->GetFaceRight() != face)
+                FlipEdge(curredge);
 
             curredge = _edges.find(curredge->GetEdgeRightOut());
         }
 
     }while(curredge != startedge);
+}
+
+void WorkerGeometry::FlipEdge(QHash<size_t, Edge>::Iterator &e){
+    size_t aux;
+
+    aux = e->GetVerticeOrigin();
+    e->SetVerticeOrigin(e->GetVerticeDestination());
+    e->SetVerticeDestination(aux);
+
+    aux = e->GetEdgeLeftIn();
+    e->SetEdgeLeftIn(e->GetEdgeRightIn());
+    e->SetEdgeRightIn(aux);
+
+    aux = e->GetEdgeLeftOut();
+    e->SetEdgeLeftOut(e->GetEdgeRightOut());
+    e->SetEdgeRightOut(aux);
+
+    aux = e->GetFaceLeft();
+    e->SetFaceLeft(e->GetFaceRight());
+    e->SetFaceRight(aux);
 }
 
 void WorkerGeometry::OpenObj(QString filename){
