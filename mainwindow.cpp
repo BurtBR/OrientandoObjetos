@@ -5,8 +5,11 @@
 #include <QMovie>
 #include "workergeometry.h"
 
+#include <QStringListModel>
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
+    _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageMT);
 }
 
 MainWindow::~MainWindow(){
@@ -33,6 +36,10 @@ void MainWindow::DeleteThread(QThread **thread){
 bool MainWindow::Init(){
     connect(_ui->actionAbrir, &QAction::triggered, this, &MainWindow::On_actionAbrir_triggered);
     connect(_ui->buttonClearConsole, &QToolButton::clicked, this, &MainWindow::On_buttonClearConsole_Clicked);
+    connect(_ui->buttonVertices, &QToolButton::clicked, this, &MainWindow::On_buttonVertices_Clicked);
+    connect(_ui->buttonEdges, &QToolButton::clicked, this, &MainWindow::On_buttonEdges_Clicked);
+    connect(_ui->buttonFaces, &QToolButton::clicked, this, &MainWindow::On_buttonFaces_Clicked);
+    connect(_ui->listVertices, &QListWidget::currentRowChanged, this, &MainWindow::On_listVertices_SelectionChanged);
 
     if(!StartThreadGeometry())
         return false;
@@ -89,6 +96,10 @@ bool MainWindow::StartThreadGeometry(){
     return true;
 }
 
+void MainWindow::On_listVertices_SelectionChanged(int idx){
+    ConsoleMessage(_ui->listVertices->item(idx)->text());
+}
+
 void MainWindow::On_actionAbrir_triggered(bool){
     QString filename = QFileDialog::getOpenFileName(this, "Abrir arquivo", "", "*.obj");
 
@@ -110,6 +121,18 @@ void MainWindow::On_actionAbrir_triggered(bool){
     movie->start();
 
     emit OpenObj(filename);
+}
+
+void MainWindow::On_buttonVertices_Clicked(){
+    _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageVertices);
+}
+
+void MainWindow::On_buttonEdges_Clicked(){
+    _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageEdges);
+}
+
+void MainWindow::On_buttonFaces_Clicked(){
+    _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageFaces);
 }
 
 void MainWindow::On_buttonClearConsole_Clicked(){

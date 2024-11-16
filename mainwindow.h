@@ -33,7 +33,11 @@ private slots:
     void WorkerMessage(QString msg, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::Misc);
     void FileHandlingFinished();
 
+    void On_listVertices_SelectionChanged(int idx);
     void On_actionAbrir_triggered(bool);
+    void On_buttonVertices_Clicked();
+    void On_buttonEdges_Clicked();
+    void On_buttonFaces_Clicked();
     void On_buttonClearConsole_Clicked();
 
 signals:
