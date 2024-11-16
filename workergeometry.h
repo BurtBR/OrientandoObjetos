@@ -21,8 +21,13 @@ private:
     void CheckDuplicateVertices();
     void ReplaceVerticeReference(size_t from, size_t to);
     void ReplaceEdgeReferences(size_t from, size_t to);
-    void SetFaceToSide(size_t face, bool left = true);
+    void SetFaceToSide(size_t face, size_t startedge, bool left = true);
+    void FlipFaceEdges(size_t face);
+    void FlipFaceEdgesHorizontal(size_t face);
+    void FlipFaceEdgesVertical(size_t face);
     void FlipEdge(QHash<size_t, Edge>::Iterator &e);
+    void FlipEdgeVerticalAxis(QHash<size_t, Edge>::Iterator &e);
+    void FlipEdgeHorizontalAxis(QHash<size_t, Edge>::Iterator &e);
 
 public:
     WorkerGeometry(QObject *parent = nullptr);
