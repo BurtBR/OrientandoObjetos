@@ -281,7 +281,18 @@ void WorkerGeometry::FlipFaceEdgesVertical(size_t face){
 }
 
 void WorkerGeometry::FlipEdge(QHash<size_t, Edge>::Iterator &e){
+    QHash<size_t, Vertice>::Iterator v;
     size_t aux;
+
+    v = _vertices.find(e->GetVerticeDestination());
+    if(v->GetIncidentEdge() == e.key()){
+        v->SetIncidentEdge(e->GetEdgeLeftIn());
+    }
+
+    v = _vertices.find(e->GetVerticeOrigin());
+    if(v->GetIncidentEdge() == -1){
+        v->SetIncidentEdge(e.key());
+    }
 
     aux = e->GetVerticeOrigin();
     e->SetVerticeOrigin(e->GetVerticeDestination());
@@ -301,7 +312,18 @@ void WorkerGeometry::FlipEdge(QHash<size_t, Edge>::Iterator &e){
 }
 
 void WorkerGeometry::FlipEdgeVerticalAxis(QHash<size_t, Edge>::Iterator &e){
+    QHash<size_t, Vertice>::Iterator v;
     size_t aux;
+
+    v = _vertices.find(e->GetVerticeDestination());
+    if(v->GetIncidentEdge() == e->GetEdgeLeftIn()){
+        v->SetIncidentEdge(e.key());
+    }
+
+    v = _vertices.find(e->GetVerticeOrigin());
+    if(v->GetIncidentEdge() == e->GetEdgeRightIn()){
+        v->SetIncidentEdge(e->GetEdgeLeftOut());
+    }
 
     aux = e->GetEdgeLeftIn();
     e->SetEdgeLeftIn(e->GetEdgeRightOut());
@@ -317,7 +339,18 @@ void WorkerGeometry::FlipEdgeVerticalAxis(QHash<size_t, Edge>::Iterator &e){
 }
 
 void WorkerGeometry::FlipEdgeHorizontalAxis(QHash<size_t, Edge>::Iterator &e){
+    QHash<size_t, Vertice>::Iterator v;
     size_t aux;
+
+    v = _vertices.find(e->GetVerticeDestination());
+    if(v->GetIncidentEdge() == e.key()){
+        v->SetIncidentEdge(e->GetEdgeRightOut());
+    }
+
+    v = _vertices.find(e->GetVerticeOrigin());
+    if(v->GetIncidentEdge() == e->GetEdgeRightIn()){
+        v->SetIncidentEdge(e.key());
+    }
 
     aux = e->GetVerticeOrigin();
     e->SetVerticeOrigin(e->GetVerticeDestination());
@@ -430,6 +463,7 @@ void WorkerGeometry::OpenObj(QString filename){
                         destination = idx;
                         _edges[_edges.size()-1].SetEdgeRightOut(_edges.size());
                         _edges.insert(_edges.size(), Edge(origin, destination, -1, _faces.size()-1, -1, -1, _edges.size()-1));
+                        _vertices.find(destination)->SetIncidentEdge(_edges.size()-1);
                     }
                 }
 
@@ -438,6 +472,7 @@ void WorkerGeometry::OpenObj(QString filename){
                     destination = firstvertice;
                     _edges[_edges.size()-1].SetEdgeRightOut(_edges.size());
                     _edges.insert(_edges.size(), Edge(origin, destination, -1, _faces.size()-1, -1, -1, _edges.size()-1, firstedge));
+                    _vertices.find(destination)->SetIncidentEdge(_edges.size()-1);
                 }else{
                     _edges[_edges.size()-1].SetEdgeRightOut(firstedge);
                 }
