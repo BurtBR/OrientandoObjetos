@@ -38,5 +38,6 @@ private slots:
 
 signals:
     void OpenObj(QString filename);
+    void PrintAllData();
 };
 #endif // MAINWINDOW_H

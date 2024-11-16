@@ -417,6 +417,8 @@ void WorkerGeometry::OpenObj(QString filename){
                 _edges.insert(_edges.size(), Edge(origin, destination, -1, _faces.size()));
                 _faces.insert(_faces.size(), Face(_edges.size()-1));
 
+                _vertices.find(destination)->SetIncidentEdge(_edges.size()-1);
+
                 firstedge = (_edges.size()-1);
 
                 for(int i=3; i<strlist.size() ;i++){
@@ -465,4 +467,44 @@ void WorkerGeometry::OpenObj(QString filename){
     ParseFileData();
 
     emit FileHandlingFinished();
+}
+
+void WorkerGeometry::PrintAllData(){
+
+    if(!_vertices.size()){
+        emit Message("Não há estruturas para imprimir", ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
+    QHash<size_t, Vertice>::Iterator v = _vertices.begin();
+    QHash<size_t, Edge>::Iterator e = _edges.begin();
+    QHash<size_t, Face>::Iterator f = _faces.begin();
+
+    while(v != _vertices.end()){
+        emit Message("Vértice " + QString::number(v.key()).rightJustified(3,' ') + " | (  X;  Y;  Z)=(" +
+                     QString::number(v->GetX()).rightJustified(3,' ') + ";" +
+                     QString::number(v->GetY()).rightJustified(3,' ') + ";" +
+                     QString::number(v->GetZ()).rightJustified(3,' ') + ") |" +
+                     " Aresta " + QString::number((int)v->GetIncidentEdge()).rightJustified(3,' ') + " |", ErrorMessage::ErrorCode::Misc);
+        v++;
+    }
+
+    while(e != _edges.end()){
+        emit Message("Aresta " + QString::number(e.key()).rightJustified(3,' ') + "\n| "+
+                     "Orig. " + QString::number(e->GetVerticeOrigin()).rightJustified(3,' ') + " | "+
+                     "Dest. " + QString::number(e->GetVerticeDestination()).rightJustified(3,' ') + " |\n| "+
+                     "Face Dir. " + QString::number((int)e->GetFaceRight()).rightJustified(3,' ') + " | "+
+                     "Dir. In " + QString::number((int)e->GetEdgeRightIn()).rightJustified(3,' ') + " | "+
+                     "Dir. Out " + QString::number((int)e->GetEdgeRightOut()).rightJustified(3,' ') + " |\n| "+
+                     "Face Esq. " + QString::number((int)e->GetFaceLeft()).rightJustified(3,' ') + " | "+
+                     "Esq. In " + QString::number((int)e->GetEdgeLeftIn()).rightJustified(3,' ') + " | "+
+                     "Esq. Out " + QString::number((int)e->GetEdgeLeftOut()).rightJustified(3,' ') + " | ", ErrorMessage::ErrorCode::Misc);
+        e++;
+    }
+
+    while(f != _faces.end()){
+        emit Message("Face " + QString::number(f.key()).rightJustified(3,' ') + " | " +
+                     "Aresta " + QString::number(f->GetEdge()).rightJustified(3,' ') + " |", ErrorMessage::ErrorCode::Misc);
+        f++;
+    }
 }

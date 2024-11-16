@@ -35,6 +35,7 @@ public:
 
 public slots:
     void OpenObj(QString filename);
+    void PrintAllData();
 
 signals:
     void Message(QString, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::Misc);

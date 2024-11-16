@@ -78,7 +78,10 @@ bool MainWindow::StartThreadGeometry(){
     connect(_threadGeometry, &QThread::finished, worker, &WorkerGeometry::deleteLater);
     connect(worker, &WorkerGeometry::Message, this, &MainWindow::WorkerMessage);
     connect(worker, &WorkerGeometry::FileHandlingFinished, this, &MainWindow::FileHandlingFinished);
+
     connect(this, &MainWindow::OpenObj, worker, &WorkerGeometry::OpenObj);
+
+    connect(_ui->buttonPrintStructures, &QToolButton::clicked, worker, &WorkerGeometry::PrintAllData);
 
     worker->moveToThread(_threadGeometry);
     _threadGeometry->start();

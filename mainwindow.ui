@@ -10,6 +10,11 @@
     <height>791</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <family>Consolas</family>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Orientando Objetos</string>
   </property>
@@ -51,7 +56,7 @@ QToolButton::pressed{
 }
 
 QTextEdit{
-	font: 15pt &quot;Source Code Pro&quot;;
+	font: 15pt &quot;Consolas&quot;;
 	color: white;
 	background-color: rgba(105, 105, 105, 50);
 	border-color: transparent;
@@ -95,8 +100,21 @@ QTextEdit{
             <height>50</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Arestas</string>
+          </property>
           <property name="text">
-           <string>...</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="resource.qrc">
+            <normaloff>:/Images/Edge.png</normaloff>:/Images/Edge.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -120,13 +138,26 @@ QTextEdit{
             <height>50</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Faces</string>
+          </property>
           <property name="text">
-           <string>...</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="resource.qrc">
+            <normaloff>:/Images/face.png</normaloff>:/Images/face.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
           </property>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QToolButton" name="toolButton">
+         <widget class="QToolButton" name="buttonPrintStructures">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
             <horstretch>0</horstretch>
@@ -145,8 +176,21 @@ QTextEdit{
             <height>50</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Imprimir Estruturas</string>
+          </property>
           <property name="text">
-           <string>...</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="resource.qrc">
+            <normaloff>:/Images/papericon.png</normaloff>:/Images/papericon.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -170,8 +214,21 @@ QTextEdit{
             <height>50</height>
            </size>
           </property>
+          <property name="toolTip">
+           <string>Vértices</string>
+          </property>
           <property name="text">
-           <string>...</string>
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="resource.qrc">
+            <normaloff>:/Images/vertice.png</normaloff>:/Images/vertice.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
           </property>
          </widget>
         </item>
@@ -236,6 +293,14 @@ QTextEdit{
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <family>Consolas</family>
+          <pointsize>15</pointsize>
+          <italic>false</italic>
+          <bold>false</bold>
+         </font>
         </property>
         <property name="focusPolicy">
          <enum>Qt::FocusPolicy::ClickFocus</enum>

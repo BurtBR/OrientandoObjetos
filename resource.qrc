@@ -2,5 +2,9 @@
     <qresource prefix="/">
         <file>Images/SoftwareIcon.png</file>
         <file>Images/Loading.gif</file>
+        <file>Images/papericon.png</file>
+        <file>Images/vertice.png</file>
+        <file>Images/Edge.png</file>
+        <file>Images/face.png</file>
     </qresource>
 </RCC>
