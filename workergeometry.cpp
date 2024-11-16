@@ -341,13 +341,13 @@ void WorkerGeometry::OpenObj(QString filename){
     size_t idx, origin, destination, firstvertice, firstedge;
 
     if(!fileinfo.exists()){
-        emit Message("O arquivo não existe", ErrorMessage::ErrorCode::FailedToOpenFile);
+        emit Message("O arquivo não existe.", ErrorMessage::ErrorCode::FailedToOpenFile);
         emit FileHandlingFinished();
         return;
     }
 
     if(!fp.open(QIODevice::ReadOnly | QIODevice::Text)){
-        emit Message("Acesso negado", ErrorMessage::ErrorCode::FailedToOpenFile);
+        emit Message("Acesso negado.", ErrorMessage::ErrorCode::FailedToOpenFile);
         emit FileHandlingFinished();
         return;
     }

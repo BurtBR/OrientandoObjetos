@@ -34,6 +34,7 @@ private slots:
     void FileHandlingFinished();
 
     void On_actionAbrir_triggered(bool);
+    void On_buttonClearConsole_Clicked();
 
 signals:
     void OpenObj(QString filename);

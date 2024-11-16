@@ -251,8 +251,8 @@ QTextEdit{
      </layout>
     </item>
     <item>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
        <widget class="QStackedWidget" name="widgetOptions">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -268,6 +268,19 @@ QTextEdit{
         </property>
         <widget class="QWidget" name="page"/>
         <widget class="QWidget" name="page_2"/>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="buttonClearConsole">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Limpar Console</string>
+        </property>
        </widget>
       </item>
      </layout>

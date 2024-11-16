@@ -32,6 +32,7 @@ void MainWindow::DeleteThread(QThread **thread){
 
 bool MainWindow::Init(){
     connect(_ui->actionAbrir, &QAction::triggered, this, &MainWindow::On_actionAbrir_triggered);
+    connect(_ui->buttonClearConsole, &QToolButton::clicked, this, &MainWindow::On_buttonClearConsole_Clicked);
 
     if(!StartThreadGeometry())
         return false;
@@ -40,7 +41,7 @@ bool MainWindow::Init(){
 }
 
 void MainWindow::WorkerMessage(QString msg, ErrorMessage::ErrorCode code){
-    ConsoleMessage(ErrorMessage::GetErrorStr(code) + " " + msg);
+    ConsoleMessage(ErrorMessage::GetErrorStr(code) + msg);
 }
 
 void MainWindow::FileHandlingFinished(){
@@ -106,4 +107,8 @@ void MainWindow::On_actionAbrir_triggered(bool){
     movie->start();
 
     emit OpenObj(filename);
+}
+
+void MainWindow::On_buttonClearConsole_Clicked(){
+    _ui->textConsole->clear();
 }
