@@ -19,6 +19,7 @@ private:
     void ParseFileData();
     QHash<size_t, Edge>::Iterator FindEquivalentEdge(size_t edge);
     void CheckDuplicateVertices();
+    void CheckVerticesIncidentEdges();
     void ReplaceVerticeReference(size_t from, size_t to);
     void ReplaceEdgeReferences(size_t from, size_t to);
     void SetFaceToSide(size_t face, size_t startedge, bool left = true);
@@ -28,16 +29,28 @@ private:
     void FlipEdge(QHash<size_t, Edge>::Iterator &e);
     void FlipEdgeVerticalAxis(QHash<size_t, Edge>::Iterator &e);
     void FlipEdgeHorizontalAxis(QHash<size_t, Edge>::Iterator &e);
+    void SendVerticeList();
+    void SendEdgeList();
+    void SendFaceList();
 
 public:
     WorkerGeometry(QObject *parent = nullptr);
     ~WorkerGeometry();
 
 public slots:
+    void GetSelectedVertice(size_t id);
+    void GetSelectedEdge(size_t id);
+    void GetSelectedFace(size_t id);
     void OpenObj(QString filename);
     void PrintAllData();
 
 signals:
+    void SetVerticeList(QStringList list);
+    void SetEdgeList(QStringList list);
+    void SetFaceList(QStringList list);
+    void SetSelectedVerticeData(Vertice v);
+    void SetSelectedEdgeData(Edge e);
+    void SetSelectedFaceData(Face f);
     void Message(QString, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::Misc);
     void FileHandlingFinished();
 };

@@ -3,9 +3,6 @@
 
 #include <cstddef>
 
-// TEMP
-#include <QDebug>
-
 class Edge{
 private:
     size_t _vOrigin, _vDestination, _fLeft, _fRight, _eLeft_In, _eLeft_Out, _eRight_In, _eRight_Out;

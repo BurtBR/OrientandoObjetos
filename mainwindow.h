@@ -5,6 +5,9 @@
 #include <QDateTime>
 #include <QThread>
 #include "errormessage.h"
+#include "vertice.h"
+#include "edge.h"
+#include "face.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -32,8 +35,16 @@ public:
 private slots:
     void WorkerMessage(QString msg, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::Misc);
     void FileHandlingFinished();
+    void SetVerticeList(QStringList list);
+    void SetEdgeList(QStringList list);
+    void SetFaceList(QStringList list);
+    void SetSelectedVerticeData(Vertice v);
+    void SetSelectedEdgeData(Edge e);
+    void SetSelectedFaceData(Face f);
 
     void On_listVertices_SelectionChanged(int idx);
+    void On_listEdges_SelectionChanged(int idx);
+    void On_listFaces_SelectionChanged(int idx);
     void On_actionAbrir_triggered(bool);
     void On_buttonVertices_Clicked();
     void On_buttonEdges_Clicked();
@@ -42,6 +53,9 @@ private slots:
 
 signals:
     void OpenObj(QString filename);
+    void GetSelectedVertice(size_t id);
+    void GetSelectedEdge(size_t id);
+    void GetSelectedFace(size_t id);
     void PrintAllData();
 };
 #endif // MAINWINDOW_H
