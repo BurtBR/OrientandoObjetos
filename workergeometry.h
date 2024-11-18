@@ -43,6 +43,9 @@ public slots:
     void GetSelectedFace(size_t id);
     void OpenObj(QString filename);
     void PrintAllData();
+    void PrintVerticesFromFace(size_t f);
+    void PrintFacesFromEdge(size_t e);
+    void PrintEdgesFromVertice(size_t v);
 
 signals:
     void SetVerticeList(QStringList list);

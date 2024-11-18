@@ -39,6 +39,9 @@ bool MainWindow::Init(){
     connect(_ui->buttonVertices, &QToolButton::clicked, this, &MainWindow::On_buttonVertices_Clicked);
     connect(_ui->buttonEdges, &QToolButton::clicked, this, &MainWindow::On_buttonEdges_Clicked);
     connect(_ui->buttonFaces, &QToolButton::clicked, this, &MainWindow::On_buttonFaces_Clicked);
+    connect(_ui->buttonFacesFromEdges, &QToolButton::clicked, this, &MainWindow::On_buttonFacesFromEdge_Clicked);
+    connect(_ui->buttonEdgesFromVertices, &QToolButton::clicked, this, &MainWindow::On_buttonEdgesFromVertices_Clicked);
+    connect(_ui->buttonVerticesFromFace, &QToolButton::clicked, this, &MainWindow::On_buttonVerticesFromFace_Clicked);
     connect(_ui->listVertices, &QListWidget::currentRowChanged, this, &MainWindow::On_listVertices_SelectionChanged);
     connect(_ui->listEdges, &QListWidget::currentRowChanged, this, &MainWindow::On_listEdges_SelectionChanged);
     connect(_ui->listFaces, &QListWidget::currentRowChanged, this, &MainWindow::On_listFaces_SelectionChanged);
@@ -148,6 +151,9 @@ bool MainWindow::StartThreadGeometry(){
     connect(this, &MainWindow::GetSelectedVertice, worker, &WorkerGeometry::GetSelectedVertice);
     connect(this, &MainWindow::GetSelectedEdge, worker, &WorkerGeometry::GetSelectedEdge);
     connect(this, &MainWindow::GetSelectedFace, worker, &WorkerGeometry::GetSelectedFace);
+    connect(this, &MainWindow::PrintFacesFromEdge, worker, &WorkerGeometry::PrintFacesFromEdge);
+    connect(this, &MainWindow::PrintVerticesFromFace, worker, &WorkerGeometry::PrintVerticesFromFace);
+    connect(this, &MainWindow::PrintEdgesFromVertice, worker, &WorkerGeometry::PrintEdgesFromVertice);
 
     connect(_ui->buttonPrintStructures, &QToolButton::clicked, worker, &WorkerGeometry::PrintAllData);
 
@@ -206,4 +212,19 @@ void MainWindow::On_buttonFaces_Clicked(){
 
 void MainWindow::On_buttonClearConsole_Clicked(){
     _ui->textConsole->clear();
+}
+
+void MainWindow::On_buttonVerticesFromFace_Clicked(){
+    if(_ui->listFaces->selectedItems().size())
+        emit PrintVerticesFromFace(_ui->listFaces->selectedItems()[0]->text().split(' ', Qt::SkipEmptyParts)[1].toULongLong());
+}
+
+void MainWindow::On_buttonFacesFromEdge_Clicked(){
+    if(_ui->listEdges->selectedItems().size())
+        emit PrintFacesFromEdge(_ui->listEdges->selectedItems()[0]->text().split(' ', Qt::SkipEmptyParts)[1].toULongLong());
+}
+
+void MainWindow::On_buttonEdgesFromVertices_Clicked(){
+    if(_ui->listVertices->selectedItems().size())
+        emit PrintEdgesFromVertice(_ui->listVertices->selectedItems()[0]->text().split(' ', Qt::SkipEmptyParts)[1].toULongLong());
 }

@@ -645,3 +645,140 @@ void WorkerGeometry::PrintAllData(){
         f++;
     }
 }
+
+void WorkerGeometry::PrintVerticesFromFace(size_t f){
+    QHash<size_t, Edge>::Iterator eBegin, curredge;
+    QHash<size_t, Face>::Iterator face = _faces.find(f);
+    QString text;
+    bool right;
+
+    if(face == _faces.end()){
+        emit Message("Face " + QString::number((int)f) + " não encontrada.", ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
+    eBegin = _edges.find(face->GetEdge());
+
+    if(eBegin == _edges.end()){
+        emit Message("Dados inconsistentes, a Face " + QString::number((int)f) + " possui aresta inválida.", ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
+    if(eBegin->GetFaceRight() == f)
+        right = true;
+    else if(eBegin->GetFaceLeft() == f)
+        right = false;
+    else{
+        emit Message("Dados inconsistentes, a Face " + QString::number((int)f) + " não pertence à aresta " +
+                     QString::number((int)eBegin.key()) + "." , ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
+    if(right)
+        curredge = _edges.find(eBegin->GetEdgeRightOut());
+    else
+        curredge = _edges.find(eBegin->GetEdgeLeftOut());
+
+    if(curredge == _edges.end()){
+        emit Message("Dados inconsistentes, referência de aresta inválida." , ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
+    text = "A Face " + QString::number((int)f) + " possui os vértices: " + QString::number((int)curredge->GetVerticeDestination());
+    if(right)
+        curredge = _edges.find(curredge->GetEdgeRightOut());
+    else
+        curredge = _edges.find(curredge->GetEdgeLeftOut());
+    if(curredge == _edges.end()){
+        emit Message("Dados inconsistentes, referência de aresta inválida." , ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
+    while(curredge != eBegin){
+        text.append(", " + QString::number((int)curredge->GetVerticeDestination()) );
+
+        if(right)
+            curredge = _edges.find(curredge->GetEdgeRightOut());
+        else
+            curredge = _edges.find(curredge->GetEdgeLeftOut());
+
+        if(curredge == _edges.end()){
+            emit Message("Dados inconsistentes, referência de aresta inválida." , ErrorMessage::ErrorCode::Misc);
+            return;
+        }
+    }
+
+    text.append(" e " + QString::number((int)curredge->GetVerticeDestination()) + ".");
+    emit Message(text, ErrorMessage::ErrorCode::Misc);
+}
+
+void WorkerGeometry::PrintFacesFromEdge(size_t e){
+    QHash<size_t, Edge>::Iterator itr = _edges.find(e);
+    QString text;
+
+    if(itr == _edges.end()){
+        emit Message("Aresta " + QString::number((int)e) + " não encontrada.", ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
+    if((itr->GetFaceLeft() == -1) && (itr->GetFaceRight() == -1)){
+        emit Message("A Aresta " + QString::number((int)e) + " não possui faces adjacentes.", ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
+    text = "A Aresta " + QString::number((int)e) + " possui a Face ";
+
+    if(itr->GetFaceRight() == -1)
+        text.append(QString::number((int)itr->GetFaceLeft()) + " ao seu lado esquerdo.");
+    else if(itr->GetFaceLeft() == -1)
+        text.append(QString::number((int)itr->GetFaceRight()) + " ao seu lado direito.");
+    else
+        text.append(QString::number((int)itr->GetFaceLeft()) + " ao seu lado esquerdo e a Face " +
+                    QString::number((int)itr->GetFaceRight()) + " ao seu lado direito.");
+
+    emit Message(text, ErrorMessage::ErrorCode::Misc);
+}
+
+void WorkerGeometry::PrintEdgesFromVertice(size_t v){
+
+    //TEMP
+    emit Message("Não Implementado.", ErrorMessage::ErrorCode::Misc);
+    return;
+
+    QHash<size_t, Edge>::Iterator curredge, eBegin;
+    QHash<size_t, Vertice>::Iterator vertice = _vertices.find(v);
+    QString text;
+    size_t next;
+
+    if(vertice == _vertices.end()){
+        emit Message("Vértice " + QString::number((int)v) + " não encontrado.", ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
+    eBegin = _edges.find(vertice->GetIncidentEdge());
+
+    if(eBegin == _edges.end()){
+        emit Message("Referência inválida para aresta no vértice " + QString::number((int)v) + ".", ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
+    text = "O vértice " + QString::number((int)v) + " compartilha as arestas " + QString::number((int)eBegin.key());
+
+    curredge = eBegin;
+    if(curredge->GetFaceLeft() == -1){
+        next = curredge->GetEdgeRightOut();
+        while(next != -1){
+            text.append(", " + QString::number((int)next));
+            curredge = _edges.find(next);
+            if(curredge == _edges.end()){
+                emit Message("Referência inválida para vértice.", ErrorMessage::ErrorCode::Misc);
+                return;
+            }
+        }
+    }else if(curredge->GetFaceRight() == -1){
+
+    }else{
+
+    }
+
+}

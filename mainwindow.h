@@ -50,6 +50,9 @@ private slots:
     void On_buttonEdges_Clicked();
     void On_buttonFaces_Clicked();
     void On_buttonClearConsole_Clicked();
+    void On_buttonVerticesFromFace_Clicked();
+    void On_buttonFacesFromEdge_Clicked();
+    void On_buttonEdgesFromVertices_Clicked();
 
 signals:
     void OpenObj(QString filename);
@@ -57,5 +60,8 @@ signals:
     void GetSelectedEdge(size_t id);
     void GetSelectedFace(size_t id);
     void PrintAllData();
+    void PrintVerticesFromFace(size_t f);
+    void PrintFacesFromEdge(size_t e);
+    void PrintEdgesFromVertice(size_t v);
 };
 #endif // MAINWINDOW_H
