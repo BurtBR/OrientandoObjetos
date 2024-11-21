@@ -44,12 +44,16 @@ bool MainWindow::Init(){
     connect(_ui->buttonAddOp, &QToolButton::clicked, this, &MainWindow::On_buttonAddOp_Clicked);
     connect(_ui->buttonRemoveOp, &QToolButton::clicked, this, &MainWindow::On_buttonRemoveOp_Clicked);
     connect(_ui->buttonOpBack, &QToolButton::clicked, this, &MainWindow::On_buttonOpBack_Clicked);
+    connect(_ui->buttonOpUp, &QToolButton::clicked, this, &MainWindow::On_buttonOpUp_Clicked);
+    connect(_ui->buttonOpDown, &QToolButton::clicked, this, &MainWindow::On_buttonOpDown_Clicked);
+    connect(_ui->buttonSetOpParam, &QToolButton::clicked, this, &MainWindow::On_buttonSetOpParam_Clicked);
     connect(_ui->buttonFacesFromEdges, &QToolButton::clicked, this, &MainWindow::On_buttonFacesFromEdge_Clicked);
     connect(_ui->buttonEdgesFromVertices, &QToolButton::clicked, this, &MainWindow::On_buttonEdgesFromVertices_Clicked);
     connect(_ui->buttonVerticesFromFace, &QToolButton::clicked, this, &MainWindow::On_buttonVerticesFromFace_Clicked);
     connect(_ui->listVertices, &QListWidget::currentRowChanged, this, &MainWindow::On_listVertices_SelectionChanged);
     connect(_ui->listEdges, &QListWidget::currentRowChanged, this, &MainWindow::On_listEdges_SelectionChanged);
     connect(_ui->listFaces, &QListWidget::currentRowChanged, this, &MainWindow::On_listFaces_SelectionChanged);
+    connect(_ui->listOperations, &QListWidget::currentRowChanged, this, &MainWindow::On_listOperations_SelectionChanged);
 
     if(!StartThreadGeometry())
         return false;
@@ -149,8 +153,28 @@ void MainWindow::SetOperationMatrix(QMatrix4x4 M){
 }
 
 void MainWindow::SetOperationList(QStringList list){
-    _ui->listOperations->clear();
-    _ui->listOperations->addItems(list);
+
+    int selected = _ui->listOperations->currentRow();
+
+    if(selected != -1){
+        if((_ui->listOperations->count() > list.size()) && selected > 0){
+            selected--;
+        }else if(_ui->listOperations->count() < list.size()){
+            selected = list.size()-1;
+        }
+        _ui->listOperations->clear();
+        _ui->listOperations->addItems(list);
+        _ui->listOperations->setCurrentRow(selected);
+    }else{
+        _ui->listOperations->clear();
+        _ui->listOperations->addItems(list);
+    }
+}
+
+void MainWindow::SetSelectedOperation(float x, float y, float z){
+    _ui->lineOpX->setText(QString::number(x));
+    _ui->lineOpY->setText(QString::number(y));
+    _ui->lineOpZ->setText(QString::number(z));
 }
 
 void MainWindow::ConsoleMessage(QString msg){
@@ -187,6 +211,7 @@ bool MainWindow::StartThreadGeometry(){
     connect(worker, &WorkerGeometry::FileHandlingFinished, this, &MainWindow::FileHandlingFinished);
     connect(worker, &WorkerGeometry::SetOperationList, this, &MainWindow::SetOperationList);
     connect(worker, &WorkerGeometry::SetOperationMatrix, this, &MainWindow::SetOperationMatrix);
+    connect(worker, &WorkerGeometry::SetSelectedOperation, this, &MainWindow::SetSelectedOperation);
 
     connect(this, &MainWindow::OpenObj, worker, &WorkerGeometry::OpenObj);
     connect(this, &MainWindow::GetSelectedVertice, worker, &WorkerGeometry::GetSelectedVertice);
@@ -197,6 +222,10 @@ bool MainWindow::StartThreadGeometry(){
     connect(this, &MainWindow::PrintEdgesFromVertice, worker, &WorkerGeometry::PrintEdgesFromVertice);
     connect(this, &MainWindow::AddOperation, worker, &WorkerGeometry::AddOperation);
     connect(this, &MainWindow::RemoveOperation, worker, &WorkerGeometry::RemoveOperation);
+    connect(this, &MainWindow::MoveOperationUp, worker, &WorkerGeometry::MoveOperationUp);
+    connect(this, &MainWindow::MoveOperationDown, worker, &WorkerGeometry::MoveOperationDown);
+    connect(this, &MainWindow::SetOperationXYZ, worker, &WorkerGeometry::SetOperationXYZ);
+    connect(this, &MainWindow::GetSelectedOperation, worker, &WorkerGeometry::GetSelectedOperation);
 
     connect(_ui->buttonPrintStructures, &QToolButton::clicked, worker, &WorkerGeometry::PrintAllData);
 
@@ -216,6 +245,12 @@ void MainWindow::On_listEdges_SelectionChanged(int idx){
 
 void MainWindow::On_listFaces_SelectionChanged(int idx){
     emit GetSelectedFace(_ui->listFaces->item(idx)->text().split(' ', Qt::SkipEmptyParts)[1].toULongLong());
+}
+
+void MainWindow::On_listOperations_SelectionChanged(int idx){
+    if(idx < 0)
+        return;
+    emit GetSelectedOperation(idx);
 }
 
 void MainWindow::On_actionAbrir_triggered(bool){
@@ -284,14 +319,57 @@ void MainWindow::On_buttonAddOp_Clicked(){
 }
 
 void MainWindow::On_buttonRemoveOp_Clicked(){
-    if(!_ui->listOperations->selectedItems().size())
+    if(_ui->listOperations->currentRow() == -1)
         return;
 
     emit RemoveOperation(_ui->listOperations->selectionModel()->selectedIndexes()[0].row());
 }
 
+void MainWindow::On_buttonOpUp_Clicked(){
+    int selected = _ui->listOperations->currentRow();
+    if((selected == -1) || (selected == 0))
+        return;
+
+    _ui->listOperations->setCurrentRow(selected-1);
+    emit MoveOperationUp(selected);
+}
+
+void MainWindow::On_buttonOpDown_Clicked(){
+    int selected = _ui->listOperations->currentRow();
+    if((selected == -1) || (selected == (_ui->listOperations->count()-1)))
+        return;
+
+    _ui->listOperations->setCurrentRow(selected+1);
+    emit MoveOperationDown(selected);
+}
+
 void MainWindow::On_buttonOpBack_Clicked(){
     _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageOperation);
+}
+
+void MainWindow::On_buttonSetOpParam_Clicked(){
+    int selected = _ui->listOperations->currentRow();
+    float x, y, z;
+
+    if(selected == -1)
+        return;
+
+    if(!_ui->lineOpX->text().size())
+        x = 0;
+    else
+        x = _ui->lineOpX->text().toFloat();
+
+    if(!_ui->lineOpY->text().size())
+        y = 0;
+    else
+        y = _ui->lineOpY->text().toFloat();
+
+    if(!_ui->lineOpZ->text().size())
+        z = 0;
+    else
+        z = _ui->lineOpZ->text().toFloat();
+
+    emit SetOperationXYZ(selected, x, y, z);
 }
 
 void MainWindow::On_buttonClearConsole_Clicked(){

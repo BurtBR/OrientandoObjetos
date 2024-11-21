@@ -28,6 +28,9 @@ public:
     Operation();
     Operation(float x, float y, float z, OpType op);
     OpType GetOpType();
+    float GetX() const;
+    float GetY() const;
+    float GetZ() const;
     QMatrix4x4 GetMatrix();
     void SetTranslation(float x, float y = 0, float z = 0);
     void SetRotationX(float angle);

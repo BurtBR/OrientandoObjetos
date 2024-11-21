@@ -53,6 +53,10 @@ public slots:
     void PrintEdgesFromVertice(size_t v);
     void AddOperation(float x, float y, float z, Operation::OpType op);
     void RemoveOperation(size_t idx);
+    void MoveOperationUp(size_t idx);
+    void MoveOperationDown(size_t idx);
+    void SetOperationXYZ(size_t idx, float x, float y, float z);
+    void GetSelectedOperation(size_t idx);
 
 signals:
     void SetVerticeList(QStringList list);
@@ -65,6 +69,7 @@ signals:
     void FileHandlingFinished();
     void SetOperationMatrix(QMatrix4x4 M);
     void SetOperationList(QStringList list);
+    void SetSelectedOperation(float x, float y, float z);
 };
 
 #endif // WORKERGEOMETRY_H

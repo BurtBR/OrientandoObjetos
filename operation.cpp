@@ -12,6 +12,18 @@ Operation::OpType Operation::GetOpType(){
     return _op;
 }
 
+float Operation::GetX() const{
+    return _paramx;
+}
+
+float Operation::GetY() const{
+    return _paramy;
+}
+
+float Operation::GetZ() const{
+    return _paramz;
+}
+
 QMatrix4x4 Operation::GetMatrix(){
     return _m;
 }

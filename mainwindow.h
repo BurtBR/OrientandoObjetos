@@ -44,10 +44,12 @@ private slots:
     void SetSelectedFaceData(Face f);
     void SetOperationMatrix(QMatrix4x4 M);
     void SetOperationList(QStringList list);
+    void SetSelectedOperation(float x, float y, float z);
 
     void On_listVertices_SelectionChanged(int idx);
     void On_listEdges_SelectionChanged(int idx);
     void On_listFaces_SelectionChanged(int idx);
+    void On_listOperations_SelectionChanged(int idx);
     void On_actionAbrir_triggered(bool);
     void On_buttonVertices_Clicked();
     void On_buttonEdges_Clicked();
@@ -56,7 +58,10 @@ private slots:
     void On_buttonOpMatrix_Clicked();
     void On_buttonAddOp_Clicked();
     void On_buttonRemoveOp_Clicked();
+    void On_buttonOpUp_Clicked();
+    void On_buttonOpDown_Clicked();
     void On_buttonOpBack_Clicked();
+    void On_buttonSetOpParam_Clicked();
     void On_buttonClearConsole_Clicked();
     void On_buttonVerticesFromFace_Clicked();
     void On_buttonFacesFromEdge_Clicked();
@@ -75,5 +80,7 @@ signals:
     void RemoveOperation(size_t idx);
     void MoveOperationUp(size_t idx);
     void MoveOperationDown(size_t idx);
+    void SetOperationXYZ(size_t idx, float x, float y, float z);
+    void GetSelectedOperation(size_t idx);
 };
 #endif // MAINWINDOW_H

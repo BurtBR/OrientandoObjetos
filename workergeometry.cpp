@@ -836,3 +836,46 @@ void WorkerGeometry::RemoveOperation(size_t idx){
     CalculateOpMatrix();
     SendOperations();
 }
+
+void WorkerGeometry::MoveOperationUp(size_t idx){
+    if(idx <= 0 || idx >= _ops.size())
+        return;
+
+    Operation aux = _ops[idx];
+
+    _ops[idx] = _ops[idx-1];
+    _ops[idx-1] = aux;
+
+    CalculateOpMatrix();
+    SendOperations();
+}
+
+void WorkerGeometry::MoveOperationDown(size_t idx){
+    if(idx >= (_ops.size()-1))
+        return;
+
+    Operation aux = _ops[idx];
+
+    _ops[idx] = _ops[idx+1];
+    _ops[idx+1] = aux;
+
+    CalculateOpMatrix();
+    SendOperations();
+}
+
+void WorkerGeometry::SetOperationXYZ(size_t idx, float x, float y, float z){
+    if(idx >= _ops.size())
+        return;
+
+    _ops[idx].SetOperation(x, y, z, _ops[idx].GetOpType());
+
+    CalculateOpMatrix();
+    SendOperations();
+}
+
+void WorkerGeometry::GetSelectedOperation(size_t idx){
+    if(idx >= _ops.size())
+        return;
+
+    emit SetSelectedOperation(_ops[idx].GetX(), _ops[idx].GetY(), _ops[idx].GetZ());
+}
