@@ -464,7 +464,7 @@ void WorkerGeometry::SendOperations(){
     QStringList list;
 
     for(int i=0; i<_ops.size() ;i++){
-        list.append(Operation::GetOperationStr(_ops[i].GetOpType()));
+        list.append(_ops[i].GetOperationStr());
     }
 
     emit SetOperationList(list);

@@ -39,9 +39,10 @@ public:
     void SetShearY(float x, float z);
     void SetShearZ(float x, float y);
     void SetOperation(float x, float y, float z, OpType op);
-    static float RoundFloat(float number);
+    QString GetOperationStr();
 
     static QString GetOperationStr(const OpType op);
+    static float RoundFloat(float number);
 };
 
 #endif // OPERATION_H

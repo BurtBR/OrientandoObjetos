@@ -116,7 +116,7 @@ void Operation::SetShearZ(float x, float y){
 
 float Operation::RoundFloat(float number){
 
-    if(abs(number) < 1E-7)
+    if(abs(number) < 1E-6)
         number = 0;
 
     return number;
@@ -184,4 +184,47 @@ void Operation::SetOperation(float x, float y, float z, OpType op){
     default:
         break;
     }
+}
+
+QString Operation::GetOperationStr(){
+    switch(_op){
+    case OpType::Translation:
+        return "Translação(" + QString::number(_paramx, 'f', 1) + ";" +
+               QString::number(_paramy, 'f', 1) + ";" +
+               QString::number(_paramz, 'f', 1) + ")";
+        break;
+
+    case OpType::Rotation:
+        return "Rotação(" + QString::number(_paramx, 'f', 1) + "°;" +
+               QString::number(_paramy, 'f', 1) + "°;" +
+               QString::number(_paramz, 'f', 1) + "º)";
+        break;
+
+    case OpType::Scale:
+        return "Escala(" + QString::number(_paramx, 'f', 1) + ";" +
+               QString::number(_paramy, 'f', 1) + ";" +
+               QString::number(_paramz, 'f', 1) + ")";
+        break;
+
+    case OpType::ShearX:
+        return "Cisalhamento X( ;" +
+               QString::number(_paramy, 'f', 1) + ";" +
+               QString::number(_paramz, 'f', 1) + ")";
+        break;
+
+    case OpType::ShearY:
+        return "Cisalhamento Y(" + QString::number(_paramx, 'f', 1) + "; ;" +
+               QString::number(_paramz, 'f', 1) + ")";
+        break;
+
+    case OpType::ShearZ:
+        return "Cisalhamento Z(" + QString::number(_paramx, 'f', 1) + ";" +
+               QString::number(_paramy, 'f', 1) + "; )";
+        break;
+
+    default:
+        break;
+    }
+
+    return QString();
 }
