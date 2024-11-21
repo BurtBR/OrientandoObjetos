@@ -8,6 +8,7 @@
 #include "vertice.h"
 #include "edge.h"
 #include "face.h"
+#include "operation.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -41,6 +42,8 @@ private slots:
     void SetSelectedVerticeData(Vertice v);
     void SetSelectedEdgeData(Edge e);
     void SetSelectedFaceData(Face f);
+    void SetOperationMatrix(QMatrix4x4 M);
+    void SetOperationList(QStringList list);
 
     void On_listVertices_SelectionChanged(int idx);
     void On_listEdges_SelectionChanged(int idx);
@@ -49,6 +52,9 @@ private slots:
     void On_buttonVertices_Clicked();
     void On_buttonEdges_Clicked();
     void On_buttonFaces_Clicked();
+    void On_buttonOperations_Clicked();
+    void On_buttonOpMatrix_Clicked();
+    void On_buttonOpBack_Clicked();
     void On_buttonClearConsole_Clicked();
     void On_buttonVerticesFromFace_Clicked();
     void On_buttonFacesFromEdge_Clicked();
@@ -63,5 +69,8 @@ signals:
     void PrintVerticesFromFace(size_t f);
     void PrintFacesFromEdge(size_t e);
     void PrintEdgesFromVertice(size_t v);
+    void AddOperation(Operation op);
+    void MoveOperationUp(size_t idx);
+    void MoveOperationDown(size_t idx);
 };
 #endif // MAINWINDOW_H

@@ -13,10 +13,13 @@ QMatrix4x4 Operation::GetMatrix(){
 }
 
 void Operation::SetTranslation(float x, float y, float z){
+    _m.setToIdentity();
     _op = OpType::Translation;
     _paramx = x;
     _paramy = y;
     _paramz = z;
+
+    _m.setRow(3, QVector4D(x, y, z, 1));
 }
 
 void Operation::SetRotationX(float angle){
@@ -36,32 +39,73 @@ void Operation::SetRotation(float anglex, float angley, float anglez){
     _paramx = anglex;
     _paramy = angley;
     _paramz = anglez;
+
+    anglex = (anglex*M_PI/180);
+    angley = (angley*M_PI/180);
+    anglez = (anglez*M_PI/180);
+
+    _m.setRow(0, QVector4D(
+              qCos(angley)*qCos(anglez),
+              qCos(angley)*qSin(anglez),
+              -qSin(angley),
+              0));
+
+    _m.setRow(1, QVector4D(
+              qCos(anglez)*qSin(anglex)*qSin(angley) - qCos(anglex)*qSin(anglez),
+              qCos(anglex)*qCos(anglez) + qSin(anglex)*qSin(angley)*qSin(anglez),
+              qCos(angley)*qSin(anglex),
+              0));
+
+    _m.setRow(2, QVector4D(
+              qSin(anglex)*qSin(anglez) + qCos(anglex)*qCos(anglez)*qSin(angley),
+              qCos(anglex)*qSin(angley)*qSin(anglez) - qCos(anglez)*qSin(anglex),
+              qCos(anglex)*qCos(angley),
+              0));
+
+    _m.setRow(3, QVector4D(
+              0,
+              0,
+              0,
+              1));
 }
 
 void Operation::SetScale(float x, float y, float z){
+    _m.setToIdentity();
     _op = OpType::Scale;
     _paramx = x;
     _paramy = y;
     _paramz = z;
+
+    _m.data()[0] = x;
+    _m.data()[5] = y;
+    _m.data()[10] = z;
 }
 
 void Operation::SetShearX(float y, float z){
+    _m.setToIdentity();
     _op = OpType::ShearX;
     _paramx = 0;
     _paramy = y;
     _paramz = z;
+
+    _m.setRow(0, QVector4D(1, y, z, 0));
 }
 
 void Operation::SetShearY(float x, float z){
+    _m.setToIdentity();
     _op = OpType::ShearY;
     _paramx = x;
     _paramy = 0;
     _paramz = z;
+    _m.setRow(1, QVector4D(x, 1, z, 0));
 }
 
 void Operation::SetShearZ(float x, float y){
+    _m.setToIdentity();
     _op = OpType::ShearZ;
     _paramx = x;
     _paramy = y;
     _paramz = 0;
+
+    _m.setRow(2, QVector4D(x, y, 1, 0));
 }

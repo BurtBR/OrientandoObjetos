@@ -1,6 +1,7 @@
 #ifndef OPERATION_H
 #define OPERATION_H
 
+#include <QtMath>
 #include <QMatrix4x4>
 
 class Operation{

@@ -27,13 +27,6 @@
 	background-color: rgb(45, 45, 45);
 }
 
-QPushButton{
-	font: 12pt &quot;Source Code Pro&quot;;
-	color: white;
-	background-color: rgb(105, 105, 105);
-	border-radius: 10%;
-}
-
 QPushButton::pressed{
 	font: 12pt &quot;Source Code Pro&quot;;
 	color: white;
@@ -42,7 +35,7 @@ QPushButton::pressed{
 }
 
 QToolButton{
-	font: 12pt &quot;Source Code Pro&quot;;
+	font: 15pt &quot;Source Code Pro&quot;;
 	color: white;
 	background-color: rgb(105, 105, 105);
 	border-radius: 10%;
@@ -56,6 +49,13 @@ QToolButton::pressed{
 }
 
 QTextEdit{
+	font: 15pt &quot;Consolas&quot;;
+	color: white;
+	background-color: rgba(105, 105, 105, 50);
+	border-color: transparent;
+}
+
+QComboBox{
 	font: 15pt &quot;Consolas&quot;;
 	color: white;
 	background-color: rgba(105, 105, 105, 50);
@@ -99,6 +99,127 @@ QListWidget{
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <layout class="QGridLayout" name="gridLayout">
+        <item row="3" column="0">
+         <widget class="QToolButton" name="buttonOperations">
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Operações</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="resource.qrc">
+            <normaloff>:/Images/Operations.png</normaloff>:/Images/Operations.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <spacer name="verticalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="1">
+         <widget class="QToolButton" name="buttonVertices">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Vértices</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="resource.qrc">
+            <normaloff>:/Images/vertice.png</normaloff>:/Images/vertice.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>40</width>
+            <height>40</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QToolButton" name="buttonPrintStructures">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>50</height>
+           </size>
+          </property>
+          <property name="toolTip">
+           <string>Imprimir Estruturas</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="icon">
+           <iconset resource="resource.qrc">
+            <normaloff>:/Images/papericon.png</normaloff>:/Images/papericon.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="0">
          <widget class="QToolButton" name="buttonEdges">
           <property name="sizePolicy">
@@ -175,96 +296,36 @@ QListWidget{
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QToolButton" name="buttonPrintStructures">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QLabel" name="labelGif">
           <property name="minimumSize">
            <size>
-            <width>50</width>
-            <height>50</height>
+            <width>100</width>
+            <height>100</height>
            </size>
           </property>
           <property name="maximumSize">
            <size>
-            <width>50</width>
-            <height>50</height>
+            <width>100</width>
+            <height>100</height>
            </size>
-          </property>
-          <property name="toolTip">
-           <string>Imprimir Estruturas</string>
           </property>
           <property name="text">
            <string/>
           </property>
-          <property name="icon">
-           <iconset resource="resource.qrc">
-            <normaloff>:/Images/papericon.png</normaloff>:/Images/papericon.png</iconset>
+          <property name="scaledContents">
+           <bool>true</bool>
           </property>
-          <property name="iconSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QToolButton" name="buttonVertices">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="minimumSize">
-           <size>
-            <width>50</width>
-            <height>50</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>50</width>
-            <height>50</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Vértices</string>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="resource.qrc">
-            <normaloff>:/Images/vertice.png</normaloff>:/Images/vertice.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>40</width>
-            <height>40</height>
-           </size>
+          <property name="alignment">
+           <set>Qt::AlignmentFlag::AlignCenter</set>
           </property>
          </widget>
         </item>
        </layout>
-      </item>
-      <item>
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Orientation::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
       </item>
       <item>
        <widget class="QToolButton" name="buttonClearConsole">
@@ -332,7 +393,7 @@ QListWidget{
      <widget class="QWidget" name="widgetOptions" native="true">
       <property name="maximumSize">
        <size>
-        <width>200</width>
+        <width>300</width>
         <height>16777215</height>
        </size>
       </property>
@@ -355,7 +416,7 @@ QListWidget{
           <string notr="true"/>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>5</number>
          </property>
          <widget class="QWidget" name="pageMT"/>
          <widget class="QWidget" name="pageVertices">
@@ -694,21 +755,21 @@ QListWidget{
             <widget class="QListWidget" name="listFaces"/>
            </item>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <item>
-              <widget class="QLabel" name="label_8">
-               <property name="text">
-                <string>Aresta:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="1">
               <widget class="QLineEdit" name="lineEdgOfFace">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
                <property name="placeholderText">
                 <string>&amp;e</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Aresta:</string>
                </property>
               </widget>
              </item>
@@ -742,49 +803,589 @@ QListWidget{
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="pageOperation">
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <widget class="QLabel" name="label_20">
+             <property name="text">
+              <string>Operações:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListWidget" name="listOperations">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_17">
+               <property name="text">
+                <string>X:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLineEdit" name="lineOpX">
+               <property name="placeholderText">
+                <string>Param. X</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="lineOpY">
+               <property name="placeholderText">
+                <string>Param. Y</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QLineEdit" name="lineOpZ">
+               <property name="placeholderText">
+                <string>Param. Z</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_18">
+               <property name="text">
+                <string>Y:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>Z:</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QToolButton" name="buttonOpUp">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Mover para cima</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="resource.qrc">
+               <normaloff>:/Images/Up.png</normaloff>:/Images/Up.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="buttonOpDown">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Mover para baixo</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="resource.qrc">
+               <normaloff>:/Images/Down.png</normaloff>:/Images/Down.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="buttonSetOpParam">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Definir parâmetros X, Y e Z</string>
+             </property>
+             <property name="text">
+              <string>Definir</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="buttonOpMatrix">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Ver Matriz</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QComboBox" name="comboOperations">
+             <item>
+              <property name="text">
+               <string>Translação</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Rotação</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Escala</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Cisalhamento em X</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Cisalhamento em Y</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Cisalhamento em Z</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="buttonAddOp">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Adicionar</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QToolButton" name="buttonRemoveOp">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="toolTip">
+              <string>Remover Operação</string>
+             </property>
+             <property name="text">
+              <string>Remover</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="pageOpMatrix">
+          <layout class="QVBoxLayout" name="verticalLayout_8">
+           <item>
+            <widget class="QLabel" name="label_21">
+             <property name="text">
+              <string>Matriz de Operação:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="5" column="4">
+              <widget class="QLabel" name="label_M33">
+               <property name="text">
+                <string>M33</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="6">
+              <widget class="QLabel" name="label_M44">
+               <property name="text">
+                <string>M44</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="6">
+              <widget class="QLabel" name="label_M34">
+               <property name="text">
+                <string>M34</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="5">
+              <widget class="Line" name="line_9">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_M11">
+               <property name="text">
+                <string>M11</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="Line" name="line_5">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_M21">
+               <property name="text">
+                <string>M21</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="Line" name="line_6">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_M12">
+               <property name="text">
+                <string>M12</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLabel" name="label_M22">
+               <property name="text">
+                <string>M22</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="1">
+              <widget class="Line" name="line_13">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="2">
+              <widget class="QLabel" name="label_M32">
+               <property name="text">
+                <string>M32</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="4">
+              <widget class="QLabel" name="label_M13">
+               <property name="text">
+                <string>M13</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="4">
+              <widget class="Line" name="line_4">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="6">
+              <widget class="QLabel" name="label_M14">
+               <property name="text">
+                <string>M14</string>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="0">
+              <widget class="QLabel" name="label_M41">
+               <property name="text">
+                <string>M41</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="5">
+              <widget class="Line" name="line_12">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="2">
+              <widget class="Line" name="line_3">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="Line" name="line_7">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="6">
+              <widget class="QLabel" name="label_M24">
+               <property name="text">
+                <string>M24</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="Line" name="line_10">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="4">
+              <widget class="Line" name="line">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="6">
+              <widget class="Line" name="line_17">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="2">
+              <widget class="QLabel" name="label_M42">
+               <property name="text">
+                <string>M42</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="6">
+              <widget class="Line" name="line_16">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="5">
+              <widget class="Line" name="line_15">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_M31">
+               <property name="text">
+                <string>M31</string>
+               </property>
+              </widget>
+             </item>
+             <item row="5" column="3">
+              <widget class="Line" name="line_14">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="Line" name="line_8">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="4">
+              <widget class="QLabel" name="label_M43">
+               <property name="text">
+                <string>M43</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="4">
+              <widget class="QLabel" name="label_M23">
+               <property name="text">
+                <string>M23</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="Line" name="line_2">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="Line" name="line_11">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="0">
+              <widget class="Line" name="line_18">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="2">
+              <widget class="Line" name="line_19">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="4">
+              <widget class="Line" name="line_20">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="6">
+              <widget class="Line" name="line_21">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="1">
+              <widget class="Line" name="line_22">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="3">
+              <widget class="Line" name="line_23">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+             <item row="7" column="5">
+              <widget class="Line" name="line_24">
+               <property name="orientation">
+                <enum>Qt::Orientation::Vertical</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QToolButton" name="buttonOpBack">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Voltar</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
         </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_3">
-         <property name="orientation">
-          <enum>Qt::Orientation::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_7">
-         <item>
-          <widget class="QLabel" name="labelGif">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>100</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>100</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="scaledContents">
-            <bool>true</bool>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignmentFlag::AlignCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
       </layout>
      </widget>

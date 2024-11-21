@@ -6,5 +6,8 @@
         <file>Images/vertice.png</file>
         <file>Images/Edge.png</file>
         <file>Images/face.png</file>
+        <file>Images/Operations.png</file>
+        <file>Images/Down.png</file>
+        <file>Images/Up.png</file>
     </qresource>
 </RCC>

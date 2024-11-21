@@ -39,6 +39,9 @@ bool MainWindow::Init(){
     connect(_ui->buttonVertices, &QToolButton::clicked, this, &MainWindow::On_buttonVertices_Clicked);
     connect(_ui->buttonEdges, &QToolButton::clicked, this, &MainWindow::On_buttonEdges_Clicked);
     connect(_ui->buttonFaces, &QToolButton::clicked, this, &MainWindow::On_buttonFaces_Clicked);
+    connect(_ui->buttonOperations, &QToolButton::clicked, this, &MainWindow::On_buttonOperations_Clicked);
+    connect(_ui->buttonOpMatrix, &QToolButton::clicked, this, &MainWindow::On_buttonOpMatrix_Clicked);
+    connect(_ui->buttonOpBack, &QToolButton::clicked, this, &MainWindow::On_buttonOpBack_Clicked);
     connect(_ui->buttonFacesFromEdges, &QToolButton::clicked, this, &MainWindow::On_buttonFacesFromEdge_Clicked);
     connect(_ui->buttonEdgesFromVertices, &QToolButton::clicked, this, &MainWindow::On_buttonEdgesFromVertices_Clicked);
     connect(_ui->buttonVerticesFromFace, &QToolButton::clicked, this, &MainWindow::On_buttonVerticesFromFace_Clicked);
@@ -112,6 +115,14 @@ void MainWindow::SetSelectedEdgeData(Edge e){
 
 void MainWindow::SetSelectedFaceData(Face f){
     _ui->lineEdgOfFace->setText(QString::number((int)f.GetEdge()));
+}
+
+void MainWindow::SetOperationMatrix(QMatrix4x4 M){
+
+}
+
+void MainWindow::SetOperationList(QStringList list){
+
 }
 
 void MainWindow::ConsoleMessage(QString msg){
@@ -208,6 +219,18 @@ void MainWindow::On_buttonEdges_Clicked(){
 
 void MainWindow::On_buttonFaces_Clicked(){
     _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageFaces);
+}
+
+void MainWindow::On_buttonOperations_Clicked(){
+    _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageOperation);
+}
+
+void MainWindow::On_buttonOpMatrix_Clicked(){
+    _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageOpMatrix);
+}
+
+void MainWindow::On_buttonOpBack_Clicked(){
+    _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageOperation);
 }
 
 void MainWindow::On_buttonClearConsole_Clicked(){
