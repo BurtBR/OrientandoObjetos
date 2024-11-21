@@ -4,6 +4,10 @@ Operation::Operation(){
 
 }
 
+Operation::Operation(float x, float y, float z, OpType op){
+    SetOperation(x, y, z, op);
+}
+
 Operation::OpType Operation::GetOpType(){
     return _op;
 }
@@ -45,21 +49,21 @@ void Operation::SetRotation(float anglex, float angley, float anglez){
     anglez = (anglez*M_PI/180);
 
     _m.setRow(0, QVector4D(
-              qCos(angley)*qCos(anglez),
-              qCos(angley)*qSin(anglez),
-              -qSin(angley),
+              RoundFloat(qCos(angley)*qCos(anglez)),
+              RoundFloat(qCos(angley)*qSin(anglez)),
+              RoundFloat(-qSin(angley)),
               0));
 
     _m.setRow(1, QVector4D(
-              qCos(anglez)*qSin(anglex)*qSin(angley) - qCos(anglex)*qSin(anglez),
-              qCos(anglex)*qCos(anglez) + qSin(anglex)*qSin(angley)*qSin(anglez),
-              qCos(angley)*qSin(anglex),
+              RoundFloat(qCos(anglez)*qSin(anglex)*qSin(angley) - qCos(anglex)*qSin(anglez)),
+              RoundFloat(qCos(anglex)*qCos(anglez) + qSin(anglex)*qSin(angley)*qSin(anglez)),
+              RoundFloat(qCos(angley)*qSin(anglex)),
               0));
 
     _m.setRow(2, QVector4D(
-              qSin(anglex)*qSin(anglez) + qCos(anglex)*qCos(anglez)*qSin(angley),
-              qCos(anglex)*qSin(angley)*qSin(anglez) - qCos(anglez)*qSin(anglex),
-              qCos(anglex)*qCos(angley),
+              RoundFloat(qSin(anglex)*qSin(anglez) + qCos(anglex)*qCos(anglez)*qSin(angley)),
+              RoundFloat(qCos(anglex)*qSin(angley)*qSin(anglez) - qCos(anglez)*qSin(anglex)),
+              RoundFloat(qCos(anglex)*qCos(angley)),
               0));
 
     _m.setRow(3, QVector4D(
@@ -108,4 +112,76 @@ void Operation::SetShearZ(float x, float y){
     _paramz = 0;
 
     _m.setRow(2, QVector4D(x, y, 1, 0));
+}
+
+float Operation::RoundFloat(float number){
+
+    if(abs(number) < 1E-7)
+        number = 0;
+
+    return number;
+}
+
+QString Operation::GetOperationStr(const OpType op){
+    switch(op){
+    case OpType::Translation:
+        return "Translação";
+        break;
+
+    case OpType::Rotation:
+        return "Rotação";
+        break;
+
+    case OpType::Scale:
+        return "Escala";
+        break;
+
+    case OpType::ShearX:
+        return "Cisalhamento X";
+        break;
+
+    case OpType::ShearY:
+        return "Cisalhamento Y";
+        break;
+
+    case OpType::ShearZ:
+        return "Cisalhamento Z";
+        break;
+
+    default:
+        break;
+    }
+
+    return QString();
+}
+
+void Operation::SetOperation(float x, float y, float z, OpType op){
+    switch(op){
+    case OpType::Translation:
+        SetTranslation(x, y, z);
+        break;
+
+    case OpType::Rotation:
+        SetRotation(x, y, z);
+        break;
+
+    case OpType::Scale:
+        SetScale(x, y, z);
+        break;
+
+    case OpType::ShearX:
+        SetShearX(y, z);
+        break;
+
+    case OpType::ShearY:
+        SetShearY(x, z);
+        break;
+
+    case OpType::ShearZ:
+        SetShearZ(x, y);
+        break;
+
+    default:
+        break;
+    }
 }

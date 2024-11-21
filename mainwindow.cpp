@@ -41,6 +41,8 @@ bool MainWindow::Init(){
     connect(_ui->buttonFaces, &QToolButton::clicked, this, &MainWindow::On_buttonFaces_Clicked);
     connect(_ui->buttonOperations, &QToolButton::clicked, this, &MainWindow::On_buttonOperations_Clicked);
     connect(_ui->buttonOpMatrix, &QToolButton::clicked, this, &MainWindow::On_buttonOpMatrix_Clicked);
+    connect(_ui->buttonAddOp, &QToolButton::clicked, this, &MainWindow::On_buttonAddOp_Clicked);
+    connect(_ui->buttonRemoveOp, &QToolButton::clicked, this, &MainWindow::On_buttonRemoveOp_Clicked);
     connect(_ui->buttonOpBack, &QToolButton::clicked, this, &MainWindow::On_buttonOpBack_Clicked);
     connect(_ui->buttonFacesFromEdges, &QToolButton::clicked, this, &MainWindow::On_buttonFacesFromEdge_Clicked);
     connect(_ui->buttonEdgesFromVertices, &QToolButton::clicked, this, &MainWindow::On_buttonEdgesFromVertices_Clicked);
@@ -51,6 +53,14 @@ bool MainWindow::Init(){
 
     if(!StartThreadGeometry())
         return false;
+
+    try{
+        _ui->lineOpX->setValidator(new QDoubleValidator);
+        _ui->lineOpY->setValidator(new QDoubleValidator);
+        _ui->lineOpZ->setValidator(new QDoubleValidator);
+    }catch(...){
+        return false;
+    }
 
     return true;
 }
@@ -118,11 +128,29 @@ void MainWindow::SetSelectedFaceData(Face f){
 }
 
 void MainWindow::SetOperationMatrix(QMatrix4x4 M){
+    float *data = M.data();
 
+    _ui->label_M11->setText(QString::number(data[0], 'f', 1));
+    _ui->label_M12->setText(QString::number(data[4], 'f', 1));
+    _ui->label_M13->setText(QString::number(data[8], 'f', 1));
+    _ui->label_M14->setText(QString::number(data[12], 'f', 1));
+    _ui->label_M21->setText(QString::number(data[1], 'f', 1));
+    _ui->label_M22->setText(QString::number(data[5], 'f', 1));
+    _ui->label_M23->setText(QString::number(data[9], 'f', 1));
+    _ui->label_M24->setText(QString::number(data[13], 'f', 1));
+    _ui->label_M31->setText(QString::number(data[2], 'f', 1));
+    _ui->label_M32->setText(QString::number(data[6], 'f', 1));
+    _ui->label_M33->setText(QString::number(data[10], 'f', 1));
+    _ui->label_M34->setText(QString::number(data[14], 'f', 1));
+    _ui->label_M41->setText(QString::number(data[3], 'f', 1));
+    _ui->label_M42->setText(QString::number(data[7], 'f', 1));
+    _ui->label_M43->setText(QString::number(data[11], 'f', 1));
+    _ui->label_M44->setText(QString::number(data[15], 'f', 1));
 }
 
 void MainWindow::SetOperationList(QStringList list){
-
+    _ui->listOperations->clear();
+    _ui->listOperations->addItems(list);
 }
 
 void MainWindow::ConsoleMessage(QString msg){
@@ -157,6 +185,8 @@ bool MainWindow::StartThreadGeometry(){
     connect(worker, &WorkerGeometry::SetSelectedFaceData, this, &MainWindow::SetSelectedFaceData);
     connect(worker, &WorkerGeometry::Message, this, &MainWindow::WorkerMessage);
     connect(worker, &WorkerGeometry::FileHandlingFinished, this, &MainWindow::FileHandlingFinished);
+    connect(worker, &WorkerGeometry::SetOperationList, this, &MainWindow::SetOperationList);
+    connect(worker, &WorkerGeometry::SetOperationMatrix, this, &MainWindow::SetOperationMatrix);
 
     connect(this, &MainWindow::OpenObj, worker, &WorkerGeometry::OpenObj);
     connect(this, &MainWindow::GetSelectedVertice, worker, &WorkerGeometry::GetSelectedVertice);
@@ -165,6 +195,8 @@ bool MainWindow::StartThreadGeometry(){
     connect(this, &MainWindow::PrintFacesFromEdge, worker, &WorkerGeometry::PrintFacesFromEdge);
     connect(this, &MainWindow::PrintVerticesFromFace, worker, &WorkerGeometry::PrintVerticesFromFace);
     connect(this, &MainWindow::PrintEdgesFromVertice, worker, &WorkerGeometry::PrintEdgesFromVertice);
+    connect(this, &MainWindow::AddOperation, worker, &WorkerGeometry::AddOperation);
+    connect(this, &MainWindow::RemoveOperation, worker, &WorkerGeometry::RemoveOperation);
 
     connect(_ui->buttonPrintStructures, &QToolButton::clicked, worker, &WorkerGeometry::PrintAllData);
 
@@ -227,6 +259,35 @@ void MainWindow::On_buttonOperations_Clicked(){
 
 void MainWindow::On_buttonOpMatrix_Clicked(){
     _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageOpMatrix);
+}
+
+void MainWindow::On_buttonAddOp_Clicked(){
+
+    float x, y, z;
+
+    if(!_ui->lineOpX->text().size())
+        x = 0;
+    else
+        x = _ui->lineOpX->text().toFloat();
+
+    if(!_ui->lineOpY->text().size())
+        y = 0;
+    else
+        y = _ui->lineOpY->text().toFloat();
+
+    if(!_ui->lineOpZ->text().size())
+        z = 0;
+    else
+        z = _ui->lineOpZ->text().toFloat();
+
+    emit AddOperation(x, y, z, (Operation::OpType)_ui->comboOperations->currentIndex());
+}
+
+void MainWindow::On_buttonRemoveOp_Clicked(){
+    if(!_ui->listOperations->selectedItems().size())
+        return;
+
+    emit RemoveOperation(_ui->listOperations->selectionModel()->selectedIndexes()[0].row());
 }
 
 void MainWindow::On_buttonOpBack_Clicked(){

@@ -54,6 +54,8 @@ private slots:
     void On_buttonFaces_Clicked();
     void On_buttonOperations_Clicked();
     void On_buttonOpMatrix_Clicked();
+    void On_buttonAddOp_Clicked();
+    void On_buttonRemoveOp_Clicked();
     void On_buttonOpBack_Clicked();
     void On_buttonClearConsole_Clicked();
     void On_buttonVerticesFromFace_Clicked();
@@ -69,7 +71,8 @@ signals:
     void PrintVerticesFromFace(size_t f);
     void PrintFacesFromEdge(size_t e);
     void PrintEdgesFromVertice(size_t v);
-    void AddOperation(Operation op);
+    void AddOperation(float x, float y, float z, Operation::OpType op);
+    void RemoveOperation(size_t idx);
     void MoveOperationUp(size_t idx);
     void MoveOperationDown(size_t idx);
 };

@@ -8,7 +8,7 @@ WorkerGeometry::WorkerGeometry(QObject *parent) : QObject{parent}{
 }
 
 WorkerGeometry::~WorkerGeometry(){
-
+    _opMatrix.setToIdentity();
 }
 
 bool WorkerGeometry::StrToFloat(const QString &str, float &number){
@@ -451,6 +451,25 @@ void WorkerGeometry::SendFaceList(){
     emit SetFaceList(strlist);
 }
 
+void WorkerGeometry::SendOperations(){
+    if(!_ops.size()){
+        _opMatrix.setToIdentity();
+        emit SetOperationMatrix(_opMatrix);
+        emit SetOperationList(QStringList());
+        return;
+    }
+
+    emit SetOperationMatrix(_opMatrix);
+
+    QStringList list;
+
+    for(int i=0; i<_ops.size() ;i++){
+        list.append(Operation::GetOperationStr(_ops[i].GetOpType()));
+    }
+
+    emit SetOperationList(list);
+}
+
 void WorkerGeometry::GetSelectedVertice(size_t id){
     emit SetSelectedVerticeData(_vertices.find(id).value());
 }
@@ -599,9 +618,13 @@ void WorkerGeometry::OpenObj(QString filename){
 
     ParseFileData();
 
+    _ops.clear();
+    _opMatrix.setToIdentity();
+
     SendVerticeList();
     SendEdgeList();
     SendFaceList();
+    SendOperations();
 
     emit FileHandlingFinished();
 }
@@ -781,4 +804,35 @@ void WorkerGeometry::PrintEdgesFromVertice(size_t v){
 
     }
 
+}
+
+void WorkerGeometry::AddOperation(float x, float y, float z, Operation::OpType op){
+
+    Operation newop(x, y, z, op);
+
+    _ops.append(newop);
+    _opMatrix = (newop.GetMatrix() * _opMatrix);
+    SendOperations();
+}
+
+void WorkerGeometry::CalculateOpMatrix(){
+    if(!_ops.size()){
+        _opMatrix.setToIdentity();
+        return;
+    }
+
+    _opMatrix = _ops[0].GetMatrix();
+
+    for(int i=1; i<_ops.size() ;i++){
+        _opMatrix = (_ops[i].GetMatrix() * _opMatrix);
+    }
+}
+
+void WorkerGeometry::RemoveOperation(size_t idx){
+    if(idx >= _ops.size())
+        return;
+
+    _ops.remove(idx);
+    CalculateOpMatrix();
+    SendOperations();
 }

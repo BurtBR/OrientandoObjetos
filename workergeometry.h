@@ -7,6 +7,7 @@
 #include "vertice.h"
 #include "edge.h"
 #include "face.h"
+#include "operation.h"
 
 class WorkerGeometry : public QObject{
     Q_OBJECT
@@ -14,6 +15,8 @@ private:
     QHash<size_t, Vertice> _vertices;
     QHash<size_t, Edge> _edges;
     QHash<size_t, Face> _faces;
+    QVector<Operation> _ops;
+    QMatrix4x4 _opMatrix;
 
     bool StrToFloat(const QString &str, float &number);
     void ParseFileData();
@@ -32,6 +35,8 @@ private:
     void SendVerticeList();
     void SendEdgeList();
     void SendFaceList();
+    void SendOperations();
+    void CalculateOpMatrix();
 
 public:
     WorkerGeometry(QObject *parent = nullptr);
@@ -46,6 +51,8 @@ public slots:
     void PrintVerticesFromFace(size_t f);
     void PrintFacesFromEdge(size_t e);
     void PrintEdgesFromVertice(size_t v);
+    void AddOperation(float x, float y, float z, Operation::OpType op);
+    void RemoveOperation(size_t idx);
 
 signals:
     void SetVerticeList(QStringList list);
@@ -56,6 +63,8 @@ signals:
     void SetSelectedFaceData(Face f);
     void Message(QString, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::Misc);
     void FileHandlingFinished();
+    void SetOperationMatrix(QMatrix4x4 M);
+    void SetOperationList(QStringList list);
 };
 
 #endif // WORKERGEOMETRY_H

@@ -24,7 +24,7 @@ bool Vertice::operator==(const Vertice &other) const{
            GetW() == other.GetW());
 }
 
-void Vertice::SetPosition(QGenericMatrix<4, 1, float> pos){
+void Vertice::SetPosition(QGenericMatrix<1, 4, float> pos){
     _position = pos;
 }
 
@@ -55,7 +55,7 @@ void Vertice::SetIncidentEdge(size_t e){
     _incident = e;
 }
 
-QGenericMatrix<4, 1, float> Vertice::GetPosition() const{
+QGenericMatrix<1, 4, float> Vertice::GetPosition() const{
     return _position;
 }
 

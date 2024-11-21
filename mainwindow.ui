@@ -416,7 +416,7 @@ QListWidget{
           <string notr="true"/>
          </property>
          <property name="currentIndex">
-          <number>5</number>
+          <number>4</number>
          </property>
          <widget class="QWidget" name="pageMT"/>
          <widget class="QWidget" name="pageVertices">
@@ -1080,6 +1080,9 @@ QListWidget{
                <property name="text">
                 <string>M33</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
               </widget>
              </item>
              <item row="7" column="6">
@@ -1087,12 +1090,18 @@ QListWidget{
                <property name="text">
                 <string>M44</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
               </widget>
              </item>
              <item row="5" column="6">
               <widget class="QLabel" name="label_M34">
                <property name="text">
                 <string>M34</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -1108,6 +1117,9 @@ QListWidget{
                <property name="text">
                 <string>M11</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
               </widget>
              </item>
              <item row="1" column="2">
@@ -1121,6 +1133,9 @@ QListWidget{
               <widget class="QLabel" name="label_M21">
                <property name="text">
                 <string>M21</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -1136,12 +1151,18 @@ QListWidget{
                <property name="text">
                 <string>M12</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
               </widget>
              </item>
              <item row="2" column="2">
               <widget class="QLabel" name="label_M22">
                <property name="text">
                 <string>M22</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -1157,12 +1178,18 @@ QListWidget{
                <property name="text">
                 <string>M32</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
               </widget>
              </item>
              <item row="0" column="4">
               <widget class="QLabel" name="label_M13">
                <property name="text">
                 <string>M13</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -1178,12 +1205,18 @@ QListWidget{
                <property name="text">
                 <string>M14</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
               </widget>
              </item>
              <item row="7" column="0">
               <widget class="QLabel" name="label_M41">
                <property name="text">
                 <string>M41</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -1213,6 +1246,9 @@ QListWidget{
                <property name="text">
                 <string>M24</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
               </widget>
              </item>
              <item row="2" column="1">
@@ -1241,6 +1277,9 @@ QListWidget{
                <property name="text">
                 <string>M42</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
               </widget>
              </item>
              <item row="1" column="6">
@@ -1261,6 +1300,9 @@ QListWidget{
               <widget class="QLabel" name="label_M31">
                <property name="text">
                 <string>M31</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>
@@ -1283,12 +1325,18 @@ QListWidget{
                <property name="text">
                 <string>M43</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
               </widget>
              </item>
              <item row="2" column="4">
               <widget class="QLabel" name="label_M23">
                <property name="text">
                 <string>M23</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
                </property>
               </widget>
              </item>

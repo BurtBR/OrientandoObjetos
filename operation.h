@@ -26,6 +26,7 @@ private:
 
 public:
     Operation();
+    Operation(float x, float y, float z, OpType op);
     OpType GetOpType();
     QMatrix4x4 GetMatrix();
     void SetTranslation(float x, float y = 0, float z = 0);
@@ -37,6 +38,10 @@ public:
     void SetShearX(float y, float z);
     void SetShearY(float x, float z);
     void SetShearZ(float x, float y);
+    void SetOperation(float x, float y, float z, OpType op);
+    static float RoundFloat(float number);
+
+    static QString GetOperationStr(const OpType op);
 };
 
 #endif // OPERATION_H
