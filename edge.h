@@ -35,11 +35,13 @@ public:
     void SetEdgeLeftDown(Edge *e);
     void SetEdgeRightUp(Edge *e);
     void SetEdgeRightDown(Edge *e);
+    Vertice *GetSharedVertice(Edge *other);
     Vertice *GetVerticeUp();
     Vertice *GetVerticeDown();
     Face *GetFaceLeft();
     Face *GetFaceRight();
     Face *GetValidFace();
+    Edge *GetSomeNextEdge(Face *f);
     Edge *GetNextEdge(Edge *before = nullptr);
     Edge *GetNextEdge(Edge *before, Face *f);
     Edge *GetEdgeLeftUp();

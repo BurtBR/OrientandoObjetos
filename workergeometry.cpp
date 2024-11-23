@@ -198,7 +198,6 @@ void WorkerGeometry::SendOperations(){
 
 void WorkerGeometry::GetSelectedVertice(QString str){
     Vertice *v = (Vertice*)StrToAddr(str);
-
     if(v != nullptr)
         emit SetSelectedVerticeData(*v);
 }
@@ -360,6 +359,7 @@ void WorkerGeometry::OpenObj(QString filename){
                                                                    nullptr,
                                                                    currface)));
                     otheredge->SetEdge(curredge, currface);
+                    otheredge->SetEdge(firstedge, currface);
                     curredge->SetEdge(otheredge, currface);
                     curredge = otheredge;
                 }
@@ -386,7 +386,6 @@ void WorkerGeometry::OpenObj(QString filename){
 
     unknownparameters.clear();
 
-    //ParseFileData();
     PrintAllData();
 
     _ops.clear();
@@ -441,100 +440,75 @@ void WorkerGeometry::PrintAllData(){
 }
 
 void WorkerGeometry::PrintVerticesFromFace(QString str){
-/*
-    QHash<size_t, Edge>::Iterator eBegin, curredge;
-    QHash<size_t, Face>::Iterator face = _faces.find(f);
+    Face *face = (Face*)StrToAddr(str);
     QString text;
-    bool right;
 
-    if(face == _faces.end()){
-        emit Message("Face " + QString::number((int)f) + " não encontrada.", ErrorMessage::ErrorCode::Misc);
+    if(face == nullptr){
+        emit Message(str + " não encontrada.", ErrorMessage::ErrorCode::Misc);
         return;
     }
 
-    eBegin = _edges.find(face->GetEdge());
+    Edge *ebegin = face->GetEdge(), *itr, *before, *next;
 
-    if(eBegin == _edges.end()){
-        emit Message("Dados inconsistentes, a Face " + QString::number((int)f) + " possui aresta inválida.", ErrorMessage::ErrorCode::Misc);
+    if(ebegin == nullptr){
+        emit Message("Dados inconsistentes, a " + str + " possui aresta inválida.", ErrorMessage::ErrorCode::Misc);
         return;
     }
 
-    if(eBegin->GetFaceRight() == f)
-        right = true;
-    else if(eBegin->GetFaceLeft() == f)
-        right = false;
-    else{
-        emit Message("Dados inconsistentes, a Face " + QString::number((int)f) + " não pertence à aresta " +
-                     QString::number((int)eBegin.key()) + "." , ErrorMessage::ErrorCode::Misc);
+    itr = ebegin;
+    next = itr->GetSomeNextEdge(face);
+
+    if(next == nullptr){
+        emit Message("Dados inconsistentes, a " + str + " possui aresta inválida.", ErrorMessage::ErrorCode::Misc);
         return;
     }
 
-    if(right)
-        curredge = _edges.find(eBegin->GetEdgeRightOut());
-    else
-        curredge = _edges.find(eBegin->GetEdgeLeftOut());
+    text = "A " + str + " possui os vértices: " + QString::number((uint64_t)itr->GetSharedVertice(next), 16);
 
-    if(curredge == _edges.end()){
-        emit Message("Dados inconsistentes, referência de aresta inválida." , ErrorMessage::ErrorCode::Misc);
-        return;
-    }
+    do{
+        before = itr;
+        itr = next;
 
-    text = "A Face " + QString::number((int)f) + " possui os vértices: " + QString::number((int)curredge->GetVerticeDestination());
-    if(right)
-        curredge = _edges.find(curredge->GetEdgeRightOut());
-    else
-        curredge = _edges.find(curredge->GetEdgeLeftOut());
-    if(curredge == _edges.end()){
-        emit Message("Dados inconsistentes, referência de aresta inválida." , ErrorMessage::ErrorCode::Misc);
-        return;
-    }
-
-    while(curredge != eBegin){
-        text.append(", " + QString::number((int)curredge->GetVerticeDestination()) );
-
-        if(right)
-            curredge = _edges.find(curredge->GetEdgeRightOut());
-        else
-            curredge = _edges.find(curredge->GetEdgeLeftOut());
-
-        if(curredge == _edges.end()){
-            emit Message("Dados inconsistentes, referência de aresta inválida." , ErrorMessage::ErrorCode::Misc);
+        next = itr->GetNextEdge(before);
+        if(next == nullptr){
+            emit Message("Dados inconsistentes, a " + str + " possui aresta inválida.", ErrorMessage::ErrorCode::Misc);
             return;
         }
-    }
 
-    text.append(" e " + QString::number((int)curredge->GetVerticeDestination()) + ".");
+        text.append(", " + QString::number((uint64_t)itr->GetSharedVertice(next), 16) );
+    }while(next != ebegin);
+
     emit Message(text, ErrorMessage::ErrorCode::Misc);
-*/
 }
 
 void WorkerGeometry::PrintFacesFromEdge(QString str){
-/*
-    QHash<size_t, Edge>::Iterator itr = _edges.find(e);
+
+    Edge *ptr = (Edge*)StrToAddr(str);
+
+    if(ptr == nullptr){
+        emit Message(str + " não encontrada.", ErrorMessage::ErrorCode::Misc);
+        return;
+    }
+
     QString text;
 
-    if(itr == _edges.end()){
-        emit Message("Aresta " + QString::number((int)e) + " não encontrada.", ErrorMessage::ErrorCode::Misc);
+    if((ptr->GetFaceLeft() == nullptr) && (ptr->GetFaceRight() == nullptr)){
+        emit Message("A " + str + " não possui faces adjacentes.", ErrorMessage::ErrorCode::Misc);
         return;
     }
 
-    if((itr->GetFaceLeft() == -1) && (itr->GetFaceRight() == -1)){
-        emit Message("A Aresta " + QString::number((int)e) + " não possui faces adjacentes.", ErrorMessage::ErrorCode::Misc);
-        return;
-    }
+    text = "A " + str + " possui a Face ";
 
-    text = "A Aresta " + QString::number((int)e) + " possui a Face ";
-
-    if(itr->GetFaceRight() == -1)
-        text.append(QString::number((int)itr->GetFaceLeft()) + " ao seu lado esquerdo.");
-    else if(itr->GetFaceLeft() == -1)
-        text.append(QString::number((int)itr->GetFaceRight()) + " ao seu lado direito.");
+    if(ptr->GetFaceRight() == nullptr)
+        text.append(QString::number((uint64_t)ptr->GetFaceLeft(), 16) + " ao seu lado esquerdo.");
+    else if(ptr->GetFaceLeft() == nullptr)
+        text.append(QString::number((uint64_t)ptr->GetFaceRight(), 16) + " ao seu lado direito.");
     else
-        text.append(QString::number((int)itr->GetFaceLeft()) + " ao seu lado esquerdo e a Face " +
-                    QString::number((int)itr->GetFaceRight()) + " ao seu lado direito.");
+        text.append(QString::number((uint64_t)ptr->GetFaceLeft(), 16) + " ao seu lado esquerdo e a Face " +
+                    QString::number((uint64_t)ptr->GetFaceRight(), 16) + " ao seu lado direito.");
 
     emit Message(text, ErrorMessage::ErrorCode::Misc);
-*/
+
 }
 
 void WorkerGeometry::PrintEdgesFromVertice(QString str){

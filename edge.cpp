@@ -138,6 +138,22 @@ void Edge::SetEdgeRightDown(Edge *e){
     _eRight_Down = e;
 }
 
+Vertice *Edge::GetSharedVertice(Edge *other){
+    if(other == nullptr)
+        return nullptr;
+
+    if(other->GetVerticeUp() == GetVerticeUp())
+        return GetVerticeUp();
+    else if(other->GetVerticeUp() == GetVerticeDown())
+        return GetVerticeDown();
+    else if(other->GetVerticeDown() == GetVerticeUp())
+        return GetVerticeUp();
+    else if(other->GetVerticeDown() == GetVerticeDown())
+        return GetVerticeDown();
+
+    return nullptr;
+}
+
 Vertice *Edge::GetVerticeUp(){
     return _vUp;
 }
@@ -156,6 +172,16 @@ Face *Edge::GetFaceRight(){
 
 Face *Edge::GetValidFace(){
     return (GetFaceRight()==nullptr ? GetFaceLeft() : GetFaceRight());
+}
+
+Edge *Edge::GetSomeNextEdge(Face *f){
+
+    if(f == GetFaceLeft())
+        return GetEdgeLeftUp();
+    else if(f == GetFaceRight())
+        return GetEdgeRightUp();
+
+    return nullptr;
 }
 
 Edge *Edge::GetNextEdge(Edge *before){
