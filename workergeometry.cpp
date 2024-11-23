@@ -173,27 +173,51 @@ uint64_t WorkerGeometry::StrToAddr(QString str){
     return list[1].toULongLong(nullptr,16);
 }
 
-Edge *WorkerGeometry::FindEquivalentEdge(Edge *e){
-
-    std::list<Edge>::iterator itr = _edges.begin();
-
-    while(itr != _edges.end()){
-        if(*itr == *e && &(*itr) != e)
-            return &(*itr);
-        itr++;
-    }
-    return nullptr;
-}
-
 Edge *WorkerGeometry::FindEdge(Vertice *v1, Vertice *v2){
 
-    std::list<Edge>::iterator itr = _edges.begin();
+    if(v1 == nullptr || v2 == nullptr)
+        return nullptr;
 
-    while(itr != _edges.end()){
-        if(itr->IsEquivalent(v1, v2))
-            return &(*itr);
-        itr++;
+    Edge *ebegin, *prevedge, *curredge, *nextedge;
+    Vertice *center;
+
+    if(v1->GetIncidentEdge() != nullptr){
+        center = v1;
+    }else if(v2->GetIncidentEdge() != nullptr){
+        center = v2;
+    }else{
+        return nullptr;
     }
+
+    ebegin = center->GetIncidentEdge();
+
+    if(ebegin->IsEquivalent(v1, v2))
+        return ebegin;
+
+    curredge = ebegin;
+    nextedge = curredge->GetNextEdge(curredge->GetRightEdge(center), center);
+
+    while(nextedge != nullptr && nextedge != ebegin){
+        if(nextedge->IsEquivalent(v1, v2))
+            return nextedge;
+        prevedge = curredge;
+        curredge = nextedge;
+        nextedge = nextedge->GetNextEdge(prevedge, center);
+    }
+
+    if(nextedge == nullptr){
+        curredge = ebegin;
+        nextedge = curredge->GetNextEdge(curredge->GetLeftEdge(center), center);
+
+        while(nextedge != nullptr && nextedge != ebegin){
+            if(nextedge->IsEquivalent(v1, v2))
+                return nextedge;
+            prevedge = curredge;
+            curredge = nextedge;
+            nextedge = nextedge->GetNextEdge(prevedge, center);
+        }
+    }
+
     return nullptr;
 }
 
