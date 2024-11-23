@@ -11,184 +11,61 @@ WorkerGeometry::~WorkerGeometry(){
     _opMatrix.setToIdentity();
 }
 
+void WorkerGeometry::ClearGeometry(){
+    _edges.clear();
+    _vertices.clear();
+    _faces.clear();
+}
+
+void WorkerGeometry::FailedToOpenObj(){
+    ClearGeometry();
+    emit FileHandlingFinished();
+}
+
 bool WorkerGeometry::StrToFloat(const QString &str, float &number){
     bool ok;
     number = str.toFloat(&ok);
     return ok;
 }
 
-void WorkerGeometry::ParseFileData(){
+uint64_t WorkerGeometry::StrToAddr(QString str){
+    if(!str.size())
+        return 0;
 
-    QHash<size_t, Face>::Iterator faceitr = _faces.begin();
-    QHash<size_t, Edge>::Iterator initialedge, curredge, otheredge;
-    QHash<size_t, Vertice>::Iterator verticeitr;
-    QVector<size_t> visitedfaces;
-    bool rightface;
+    QStringList list = str.split(' ');
 
-    // WALK ADJACENT FACES USING QLIST WITH VISITED FACES
+    if(list.size() != 2)
+        return 0;
 
-    emit Message("Processando dados do arquivo.", ErrorMessage::ErrorCode::Misc);
-
-    CheckDuplicateVertices();
-
-    if(!_faces.size()){
-        _edges.clear();
-        _vertices.clear();
-        _faces.clear();
-        emit Message("Objetos necessitam ao menos uma face.", ErrorMessage::ErrorCode::CorruptedFile);
-        return;
-    }
-
-    visitedfaces.append(faceitr.key());
-
-    for(int i=0; i<visitedfaces.size() ;i++){
-
-        initialedge = _edges.find(_faces.find(visitedfaces[i])->GetEdge());
-        curredge = initialedge;
-
-        if(initialedge->GetFaceRight() == visitedfaces[i])
-            rightface = true;
-        else
-            rightface = false;
-
-        do{
-
-            if(rightface){
-                if(curredge->GetFaceLeft() == -1){
-                    otheredge = FindEquivalentEdge(curredge.key());
-                    if(otheredge != _edges.end()){
-
-                        if(otheredge->GetFaceLeft() == -1){
-                            if(curredge->GetVerticeOrigin() != otheredge->GetVerticeOrigin())
-                                FlipFaceEdges(otheredge->GetFaceRight());
-                            else
-                                FlipFaceEdgesVertical(otheredge->GetFaceRight());
-                        }else if(curredge->GetVerticeOrigin() != otheredge->GetVerticeOrigin()){
-                            FlipFaceEdgesHorizontal(otheredge->GetFaceLeft());
-                        }
-
-                        curredge->SetEdgeLeftIn(otheredge->GetEdgeLeftIn());
-                        curredge->SetEdgeLeftOut(otheredge->GetEdgeLeftOut());
-                        curredge->SetFaceLeft(otheredge->GetFaceLeft());
-
-                        verticeitr = _vertices.find(curredge->GetVerticeOrigin());
-                        if(verticeitr->GetIncidentEdge() == -1){
-                            verticeitr->SetIncidentEdge(curredge->GetEdgeRightIn());
-                        }
-
-                        verticeitr = _vertices.find(curredge->GetVerticeDestination());
-                        if(verticeitr->GetIncidentEdge() == -1){
-                            verticeitr->SetIncidentEdge(curredge.key());
-                        }
-
-                        if(!visitedfaces.contains(curredge->GetFaceLeft()))
-                            visitedfaces.append(curredge->GetFaceLeft());
-
-                        ReplaceEdgeReferences(otheredge.key(), curredge.key());
-                        _edges.erase((QHash<size_t, Edge>::ConstIterator) otheredge);
-                    }
-                }
-                curredge = _edges.find(curredge->GetEdgeRightOut());
-            }else{
-                if(curredge->GetFaceRight() == -1){
-                    otheredge = FindEquivalentEdge(curredge.key());
-                    if(otheredge != _edges.end()){
-
-                        if(otheredge->GetFaceRight() == -1){
-                            if(curredge->GetVerticeOrigin() != otheredge->GetVerticeOrigin())
-                                FlipFaceEdges(otheredge->GetFaceLeft());
-                            else
-                                FlipFaceEdgesVertical(otheredge->GetFaceLeft());
-                        }else if(curredge->GetVerticeOrigin() != otheredge->GetVerticeOrigin()){
-                            FlipFaceEdgesHorizontal(otheredge->GetFaceRight());
-                        }
-
-                        curredge->SetEdgeRightIn(otheredge->GetEdgeRightIn());
-                        curredge->SetEdgeRightOut(otheredge->GetEdgeRightOut());
-                        curredge->SetFaceRight(otheredge->GetFaceRight());
-
-                        verticeitr = _vertices.find(curredge->GetVerticeOrigin());
-                        if(verticeitr->GetIncidentEdge() == -1){
-                            verticeitr->SetIncidentEdge(curredge->GetEdgeRightIn());
-                        }
-
-                        verticeitr = _vertices.find(curredge->GetVerticeDestination());
-                        if(verticeitr->GetIncidentEdge() == -1){
-                            verticeitr->SetIncidentEdge(curredge.key());
-                        }
-
-                        if(!visitedfaces.contains(curredge->GetFaceRight()))
-                            visitedfaces.append(curredge->GetFaceRight());
-
-                        ReplaceEdgeReferences(otheredge.key(), curredge.key());
-                        _edges.erase((QHash<size_t, Edge>::ConstIterator) otheredge);
-                    }
-                }
-                curredge = _edges.find(curredge->GetEdgeLeftOut());
-            }
-
-        }while(curredge != initialedge);
-
-        // If some isolated face exists
-        if( (i == (visitedfaces.size()-1)) && (visitedfaces.size() != _faces.size()) ){
-            faceitr++;
-            while(visitedfaces.contains(faceitr.key()))
-                faceitr++;
-            visitedfaces.append(faceitr.key());
-        }
-    }
-
-    CheckVerticesIncidentEdges();
-
-    emit Message("O arquivo contém " +
-                 QString::number(_vertices.size()) + " vértices, " +
-                 QString::number(_edges.size()) + " arestas e " +
-                 QString::number(_faces.size()) + " faces.");
-
+    return list[1].toULongLong(nullptr,16);
 }
 
-QHash<size_t, Edge>::Iterator WorkerGeometry::FindEquivalentEdge(size_t edge){
-    QHash<size_t, Edge>::Iterator itr = _edges.begin(), equivalent = _edges.find(edge);
+Edge *WorkerGeometry::FindEquivalentEdge(Edge *e){
+
+    std::list<Edge>::iterator itr = _edges.begin();
 
     while(itr != _edges.end()){
-        // Different ID but same edge
-        if((itr.key() != equivalent.key()) && (itr.value() == equivalent.value())){
-            return itr;
-        }
+        if(*itr == *e && &(*itr) != e)
+            return &(*itr);
         itr++;
     }
-
-    return _edges.end();
+    return nullptr;
 }
 
-void WorkerGeometry::CheckDuplicateVertices(){
+Edge *WorkerGeometry::FindEdge(Vertice *v1, Vertice *v2){
 
-    QHash<size_t, Vertice>::Iterator itr = _vertices.begin(), itr2;
+    std::list<Edge>::iterator itr = _edges.begin();
 
-    while(itr != _vertices.end()){
-
-        itr2 = itr;
-        itr2++;
-
-        while(itr2 != _vertices.end()){
-
-            if(itr.value() == itr2.value()){
-                emit Message("Vértice duplicado no arquivo: " +
-                                 QString::number(itr->GetX()) + " " +
-                                 QString::number(itr->GetY()) + " " +
-                                 QString::number(itr->GetZ()), ErrorMessage::ErrorCode::CorruptedFile);
-                ReplaceVerticeReference(itr2.key(), itr.key());
-                itr2 = _vertices.erase((QHash<size_t, Vertice>::ConstIterator)itr2);
-            }else{
-                itr2++;
-            }
-        }
-
+    while(itr != _edges.end()){
+        if(itr->IsEquivalent(v1, v2))
+            return &(*itr);
         itr++;
     }
+    return nullptr;
 }
 
 void WorkerGeometry::CheckVerticesIncidentEdges(){
+/*
     QHash<size_t, Vertice>::Iterator v = _vertices.begin();
     QHash<size_t, Edge>::Iterator e;
     QVector<size_t> wrongvertices;
@@ -211,9 +88,11 @@ void WorkerGeometry::CheckVerticesIncidentEdges(){
         }
         e++;
     }
+*/
 }
 
 void WorkerGeometry::ReplaceVerticeReference(size_t from, size_t to){
+/*
     QHash<size_t, Edge>::Iterator itr = _edges.begin();
 
     while(itr != _edges.end()){
@@ -226,9 +105,11 @@ void WorkerGeometry::ReplaceVerticeReference(size_t from, size_t to){
 
         itr++;
     }
+*/
 }
 
 void WorkerGeometry::ReplaceEdgeReferences(size_t from, size_t to){
+/*
     QHash<size_t, Vertice>::Iterator v = _vertices.begin();
     QHash<size_t, Edge>::Iterator e = _edges.begin();
     QHash<size_t, Face>::Iterator f = _faces.begin();
@@ -257,195 +138,40 @@ void WorkerGeometry::ReplaceEdgeReferences(size_t from, size_t to){
             f->SetEdge(to);
         f++;
     }
-}
-
-void WorkerGeometry::FlipFaceEdges(size_t face){
-    QHash<size_t, Edge>::Iterator curredge, startedge = _edges.find(_faces.find(face)->GetEdge());
-    bool right;
-
-    if(startedge == _edges.end())
-        return;
-
-    // As this method flip vertices and faces, this condition is inverted
-    if(startedge->GetFaceRight() == face)
-        right = false;
-    else
-        right = true;
-
-    curredge = startedge;
-
-    do{
-        FlipEdge(curredge);
-        if(right)
-            curredge = _edges.find(curredge->GetEdgeRightIn()); // THIS DIRECTION MATTERS
-        else
-            curredge = _edges.find(curredge->GetEdgeLeftOut());
-    }while(curredge != startedge);
-}
-
-void WorkerGeometry::FlipFaceEdgesHorizontal(size_t face){
-    QHash<size_t, Edge>::Iterator curredge, startedge = _edges.find(_faces.find(face)->GetEdge());
-    bool right;
-
-    if(startedge == _edges.end())
-        return;
-
-    if(startedge->GetFaceRight() == face)
-        right = true;
-    else
-        right = false;
-
-    curredge = startedge;
-
-    do{
-        FlipEdgeHorizontalAxis(curredge);
-        if(right)
-            curredge = _edges.find(curredge->GetEdgeRightIn());// THIS DIRECTION MATTERS
-        else
-            curredge = _edges.find(curredge->GetEdgeLeftOut());
-    }while(curredge != startedge);
-}
-
-void WorkerGeometry::FlipFaceEdgesVertical(size_t face){
-    QHash<size_t, Edge>::Iterator curredge, startedge = _edges.find(_faces.find(face)->GetEdge());
-    bool right;
-
-    if(startedge == _edges.end())
-        return;
-
-    // As this method flip faces, this condition is inverted
-    if(startedge->GetFaceRight() == face)
-        right = false;
-    else
-        right = true;
-
-    curredge = startedge;
-
-    do{
-        FlipEdgeVerticalAxis(curredge);
-        if(right)
-            curredge = _edges.find(curredge->GetEdgeRightIn());// THIS DIRECTION MATTERS
-        else
-            curredge = _edges.find(curredge->GetEdgeLeftOut());
-    }while(curredge != startedge);
-}
-
-void WorkerGeometry::FlipEdge(QHash<size_t, Edge>::Iterator &e){
-    QHash<size_t, Vertice>::Iterator v;
-    size_t aux;
-
-    v = _vertices.find(e->GetVerticeDestination());
-    if( (v->GetIncidentEdge() == e.key()) || (v->GetIncidentEdge() == -1) ){
-        v->SetIncidentEdge(e->GetEdgeLeftIn());
-    }
-
-    v = _vertices.find(e->GetVerticeOrigin());
-    if( (v->GetIncidentEdge() == -1) || (v->GetIncidentEdge() == -1)){
-        v->SetIncidentEdge(e.key());
-    }
-
-    aux = e->GetVerticeOrigin();
-    e->SetVerticeOrigin(e->GetVerticeDestination());
-    e->SetVerticeDestination(aux);
-
-    aux = e->GetEdgeLeftIn();
-    e->SetEdgeLeftIn(e->GetEdgeRightIn());
-    e->SetEdgeRightIn(aux);
-
-    aux = e->GetEdgeLeftOut();
-    e->SetEdgeLeftOut(e->GetEdgeRightOut());
-    e->SetEdgeRightOut(aux);
-
-    aux = e->GetFaceLeft();
-    e->SetFaceLeft(e->GetFaceRight());
-    e->SetFaceRight(aux);
-}
-
-void WorkerGeometry::FlipEdgeVerticalAxis(QHash<size_t, Edge>::Iterator &e){
-    QHash<size_t, Vertice>::Iterator v;
-    size_t aux;
-
-    v = _vertices.find(e->GetVerticeDestination());
-    if( (v->GetIncidentEdge() == e->GetEdgeLeftIn()) || (v->GetIncidentEdge() == -1) ){
-        v->SetIncidentEdge(e.key());
-    }
-
-    v = _vertices.find(e->GetVerticeOrigin());
-    if((v->GetIncidentEdge() == e->GetEdgeRightIn()) || (v->GetIncidentEdge() == -1)){
-        v->SetIncidentEdge(e->GetEdgeLeftOut());
-    }
-
-    aux = e->GetEdgeLeftIn();
-    e->SetEdgeLeftIn(e->GetEdgeRightOut());
-    e->SetEdgeRightOut(aux);
-
-    aux = e->GetEdgeLeftOut();
-    e->SetEdgeLeftOut(e->GetEdgeRightIn());
-    e->SetEdgeRightIn(aux);
-
-    aux = e->GetFaceLeft();
-    e->SetFaceLeft(e->GetFaceRight());
-    e->SetFaceRight(aux);
-}
-
-void WorkerGeometry::FlipEdgeHorizontalAxis(QHash<size_t, Edge>::Iterator &e){
-    QHash<size_t, Vertice>::Iterator v;
-    size_t aux;
-
-    v = _vertices.find(e->GetVerticeDestination());
-    if( (v->GetIncidentEdge() == e.key()) || (v->GetIncidentEdge() == -1) ){
-        v->SetIncidentEdge(e->GetEdgeRightOut());
-    }
-
-    v = _vertices.find(e->GetVerticeOrigin());
-    if( (v->GetIncidentEdge() == e->GetEdgeRightIn()) || (v->GetIncidentEdge() == -1) ){
-        v->SetIncidentEdge(e.key());
-    }
-
-    aux = e->GetVerticeOrigin();
-    e->SetVerticeOrigin(e->GetVerticeDestination());
-    e->SetVerticeDestination(aux);
-
-    aux = e->GetEdgeLeftIn();
-    e->SetEdgeLeftIn(e->GetEdgeLeftOut());
-    e->SetEdgeLeftOut(aux);
-
-    aux = e->GetEdgeRightIn();
-    e->SetEdgeRightIn(e->GetEdgeRightOut());
-    e->SetEdgeRightOut(aux);
+*/
 }
 
 void WorkerGeometry::SendVerticeList(){
-    QHash<size_t, Vertice>::Iterator v = _vertices.begin();
+    std::list<Vertice>::iterator itr = _vertices.begin();
     QStringList strlist;
 
-    while(v != _vertices.end()){
-        strlist.append("Vértice " + QString::number(v.key()));
-        v++;
+    while(itr != _vertices.end()){
+        strlist.append("Vértice " + QString::number((uint64_t)&(*itr), 16).toUpper());
+        itr++;
     }
 
     emit SetVerticeList(strlist);
 }
 
 void WorkerGeometry::SendEdgeList(){
-    QHash<size_t, Edge>::Iterator e = _edges.begin();
+    std::list<Edge>::iterator itr = _edges.begin();
     QStringList strlist;
 
-    while(e != _edges.end()){
-        strlist.append("Aresta " + QString::number(e.key()));
-        e++;
+    while(itr != _edges.end()){
+        strlist.append("Aresta " + QString::number((uint64_t)&(*itr), 16).toUpper());
+        itr++;
     }
 
     emit SetEdgeList(strlist);
 }
 
 void WorkerGeometry::SendFaceList(){
-    QHash<size_t, Face>::Iterator f = _faces.begin();
+    std::list<Face>::iterator itr = _faces.begin();
     QStringList strlist;
 
-    while(f != _faces.end()){
-        strlist.append("Face " + QString::number(f.key()));
-        f++;
+    while(itr != _faces.end()){
+        strlist.append("Face " + QString::number((uint64_t)&(*itr), 16).toUpper());
+        itr++;
     }
 
     emit SetFaceList(strlist);
@@ -470,16 +196,23 @@ void WorkerGeometry::SendOperations(){
     emit SetOperationList(list);
 }
 
-void WorkerGeometry::GetSelectedVertice(size_t id){
-    emit SetSelectedVerticeData(_vertices.find(id).value());
+void WorkerGeometry::GetSelectedVertice(QString str){
+    Vertice *v = (Vertice*)StrToAddr(str);
+
+    if(v != nullptr)
+        emit SetSelectedVerticeData(*v);
 }
 
-void WorkerGeometry::GetSelectedEdge(size_t id){
-    emit SetSelectedEdgeData(_edges.find(id).value());
+void WorkerGeometry::GetSelectedEdge(QString str){
+    Edge *e = (Edge*)StrToAddr(str);
+    if(e != nullptr)
+        emit SetSelectedEdgeData(*e);
 }
 
-void WorkerGeometry::GetSelectedFace(size_t id){
-    emit SetSelectedFaceData(_faces.find(id).value());
+void WorkerGeometry::GetSelectedFace(QString str){
+    Face *f = (Face*)StrToAddr(str);
+    if(f != nullptr)
+        emit SetSelectedFaceData(*f);
 }
 
 void WorkerGeometry::OpenObj(QString filename){
@@ -488,24 +221,23 @@ void WorkerGeometry::OpenObj(QString filename){
     QFileInfo fileinfo(fp);
     QStringList strlist, unknownparameters;
     float x, y, z;
-    size_t idx, origin, destination, firstvertice, firstedge;
+    QVector<Vertice *> vectorvertices;
+    Face *currface = nullptr;
+    Edge *curredge = nullptr, *firstedge = nullptr, *otheredge;
+    size_t idx, origin, destination, firstvertice;
 
     if(!fileinfo.exists()){
         emit Message("O arquivo não existe.", ErrorMessage::ErrorCode::FailedToOpenFile);
-        emit FileHandlingFinished();
-        return;
+        return FailedToOpenObj();
     }
 
     if(!fp.open(QIODevice::ReadOnly | QIODevice::Text)){
         emit Message("Acesso negado.", ErrorMessage::ErrorCode::FailedToOpenFile);
-        emit FileHandlingFinished();
-        return;
+        return FailedToOpenObj();
     }
 
     emit Message("Carregando arquivo: " + fileinfo.fileName());
-    _edges.clear();
-    _vertices.clear();
-    _faces.clear();
+    ClearGeometry();
 
     while(!fp.atEnd()){
         strlist.clear();
@@ -518,15 +250,16 @@ void WorkerGeometry::OpenObj(QString filename){
             case 'v':
                 if(strlist.size() != 4){
                     emit Message("Valores incompatíveis de " + strlist[0], ErrorMessage::ErrorCode::CorruptedFile);
+                    return FailedToOpenObj();
                 }else if(strlist[0].size() == 1){ // Vertice
 
-                    if(!StrToFloat(strlist[1], x) || !StrToFloat(strlist[2], y) || !StrToFloat(strlist[3], z))
+                    if(!StrToFloat(strlist[1], x) || !StrToFloat(strlist[2], y) || !StrToFloat(strlist[3], z)){
                         emit Message("Formatação incompatível de ponto flutuante: " +
                                      strlist[1] + " " + strlist[2] + " " + strlist[3],
                                      ErrorMessage::ErrorCode::CorruptedFile);
-                    else{
-                        _vertices.insert(_vertices.size(), Vertice(x,y,z));
-                        //_vertices.append(Vertice(x,y,z));
+                        return FailedToOpenObj();
+                    }else{
+                        vectorvertices.append(&(*_vertices.insert(_vertices.end(), Vertice(x,y,z))));
                     }
 
                 }else{
@@ -544,12 +277,15 @@ void WorkerGeometry::OpenObj(QString filename){
             case 'f': // Face
                 if(strlist.size() < 4){
                     emit Message("São necessários ao menos 3 pontos em uma face.", ErrorMessage::ErrorCode::CorruptedFile);
-                    break;
+                    return FailedToOpenObj();
                 }
+
+                currface = &(*_faces.insert(_faces.end(), Face()));
+
                 idx = strlist[1].split('/')[0].toLongLong()-1;
                 if(idx >= _vertices.size()){
                     emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
-                    break;
+                    return FailedToOpenObj();
                 }
 
                 firstvertice = idx;
@@ -557,44 +293,78 @@ void WorkerGeometry::OpenObj(QString filename){
 
                 idx = strlist[2].split('/')[0].toLongLong()-1;
 
-                if(!_vertices.contains(idx)){
+                if(idx >= vectorvertices.size()){
                     emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
-                    break;
+                    return FailedToOpenObj();
                 }
 
                 destination = idx;
 
-                _edges.insert(_edges.size(), Edge(origin, destination, -1, _faces.size()));
-                _faces.insert(_faces.size(), Face(_edges.size()-1));
+                otheredge = FindEdge(vectorvertices[origin], vectorvertices[destination]);
+                if(otheredge == nullptr){
+                    curredge = &(*_edges.insert(_edges.end(),Edge(vectorvertices[origin], vectorvertices[destination], nullptr, currface)));
+                    if(vectorvertices[destination]->GetIncidentEdge() == nullptr)
+                        vectorvertices[destination]->SetIncidentEdge(curredge);
+                    else if(vectorvertices[origin]->GetIncidentEdge() == nullptr)
+                        vectorvertices[origin]->SetIncidentEdge(curredge);
+                }else{
+                    curredge = otheredge;
+                    if(!curredge->SetNullSide(currface, nullptr, nullptr)){
+                        emit Message("Índices de vértice compartilha mais de 2 faces: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+                        return FailedToOpenObj();
+                    }
+                }
 
-                _vertices.find(destination)->SetIncidentEdge(_edges.size()-1);
+                currface->SetEdge(curredge);
 
-                firstedge = (_edges.size()-1);
+                firstedge = curredge;
 
                 for(int i=3; i<strlist.size() ;i++){
                     origin = destination;
                     idx = strlist[i].split('/')[0].toLongLong()-1;
-                    if(!_vertices.contains(idx)){
+                    if(idx >= vectorvertices.size()){
                         emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+                        return FailedToOpenObj();
                     }else{
                         destination = idx;
-                        _edges[_edges.size()-1].SetEdgeRightOut(_edges.size());
-                        _edges.insert(_edges.size(), Edge(origin, destination, -1, _faces.size()-1, -1, -1, _edges.size()-1));
-                        _vertices.find(destination)->SetIncidentEdge(_edges.size()-1);
+                        otheredge = FindEdge(vectorvertices[origin], vectorvertices[destination]);
+                        if(otheredge == nullptr){
+                            otheredge = &(*_edges.insert(_edges.end(),
+                                                         Edge(vectorvertices[origin],
+                                                              vectorvertices[destination],
+                                                              nullptr,
+                                                              currface)));
+                            otheredge->SetEdge(curredge, currface);
+
+                            if(vectorvertices[destination]->GetIncidentEdge() == nullptr)
+                                vectorvertices[destination]->SetIncidentEdge(curredge);
+                            else if(vectorvertices[origin]->GetIncidentEdge() == nullptr)
+                                vectorvertices[origin]->SetIncidentEdge(curredge);
+                        }else{
+                            if(!otheredge->SetNullSide(currface, curredge, nullptr)){
+                                emit Message("Vértice compartilha mais de 2 faces: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+                                return FailedToOpenObj();
+                            }
+                        }
+                        curredge->SetEdge(otheredge, currface);
+                        curredge = otheredge;
                     }
                 }
 
                 if(destination != firstvertice){
                     origin = destination;
                     destination = firstvertice;
-                    _edges[_edges.size()-1].SetEdgeRightOut(_edges.size());
-                    _edges.insert(_edges.size(), Edge(origin, destination, -1, _faces.size()-1, -1, -1, _edges.size()-1, firstedge));
-                    _vertices.find(destination)->SetIncidentEdge(_edges.size()-1);
-                }else{
-                    _edges[_edges.size()-1].SetEdgeRightOut(firstedge);
+
+                    otheredge = &(*_edges.insert(_edges.end(),Edge(vectorvertices[origin],
+                                                                   vectorvertices[destination],
+                                                                   nullptr,
+                                                                   currface)));
+                    otheredge->SetEdge(curredge, currface);
+                    curredge->SetEdge(otheredge, currface);
+                    curredge = otheredge;
                 }
 
-                _edges[firstedge].SetEdgeRightIn(_edges.size()-1);
+                firstedge->SetEdge(curredge, currface);
 
                 break;
 
@@ -616,7 +386,8 @@ void WorkerGeometry::OpenObj(QString filename){
 
     unknownparameters.clear();
 
-    ParseFileData();
+    //ParseFileData();
+    PrintAllData();
 
     _ops.clear();
     _opMatrix.setToIdentity();
@@ -636,40 +407,41 @@ void WorkerGeometry::PrintAllData(){
         return;
     }
 
-    QHash<size_t, Vertice>::Iterator v = _vertices.begin();
-    QHash<size_t, Edge>::Iterator e = _edges.begin();
-    QHash<size_t, Face>::Iterator f = _faces.begin();
+    std::list<Vertice>::iterator v = _vertices.begin();
+    std::list<Edge>::iterator e = _edges.begin();
+    std::list<Face>::iterator f = _faces.begin();
 
     while(v != _vertices.end()){
-        emit Message("Vértice " + QString::number(v.key()).rightJustified(3,' ') + " | (  X;  Y;  Z)=(" +
+        emit Message("Vértice " + QString::number((uint64_t)&(*v), 16) + " | (  X;  Y;  Z)=(" +
                      QString::number(v->GetX()).rightJustified(3,' ') + ";" +
                      QString::number(v->GetY()).rightJustified(3,' ') + ";" +
                      QString::number(v->GetZ()).rightJustified(3,' ') + ") |" +
-                     " Aresta " + QString::number((int)v->GetIncidentEdge()).rightJustified(3,' ') + " |", ErrorMessage::ErrorCode::Misc);
+                     " Aresta " + QString::number((uint64_t)v->GetIncidentEdge(), 16) + " |", ErrorMessage::ErrorCode::Misc);
         v++;
     }
 
     while(e != _edges.end()){
-        emit Message("Aresta " + QString::number(e.key()).rightJustified(3,' ') + "\n| "+
-                     "Orig. " + QString::number(e->GetVerticeOrigin()).rightJustified(3,' ') + " | "+
-                     "Dest. " + QString::number(e->GetVerticeDestination()).rightJustified(3,' ') + " |\n| "+
-                     "Face Dir. " + QString::number((int)e->GetFaceRight()).rightJustified(3,' ') + " | "+
-                     "Dir. In " + QString::number((int)e->GetEdgeRightIn()).rightJustified(3,' ') + " | "+
-                     "Dir. Out " + QString::number((int)e->GetEdgeRightOut()).rightJustified(3,' ') + " |\n| "+
-                     "Face Esq. " + QString::number((int)e->GetFaceLeft()).rightJustified(3,' ') + " | "+
-                     "Esq. In " + QString::number((int)e->GetEdgeLeftIn()).rightJustified(3,' ') + " | "+
-                     "Esq. Out " + QString::number((int)e->GetEdgeLeftOut()).rightJustified(3,' ') + " | ", ErrorMessage::ErrorCode::Misc);
+        emit Message("Aresta " + QString::number((uint64_t)&(*e), 16) + "\n| "+
+                     "V. Up " + QString::number((uint64_t)e->GetVerticeUp()) + " | "+
+                     "V. Down " + QString::number((uint64_t)e->GetVerticeDown(), 16) + " |\n| "+
+                     "Face Dir. " + QString::number((uint64_t)e->GetFaceRight(), 16) + " | "+
+                     "Dir. Up " + QString::number((uint64_t)e->GetEdgeRightUp(), 16) + " | "+
+                     "Dir. Down " + QString::number((uint64_t)e->GetEdgeRightDown(), 16) + " |\n| "+
+                     "Face Esq. " + QString::number((uint64_t)e->GetFaceLeft(), 16) + " | "+
+                     "Esq. Up " + QString::number((uint64_t)e->GetEdgeLeftUp(), 16)+ " | "+
+                     "Esq. Down " + QString::number((uint64_t)e->GetEdgeLeftDown(), 16) + " | ", ErrorMessage::ErrorCode::Misc);
         e++;
     }
 
     while(f != _faces.end()){
-        emit Message("Face " + QString::number(f.key()).rightJustified(3,' ') + " | " +
-                     "Aresta " + QString::number(f->GetEdge()).rightJustified(3,' ') + " |", ErrorMessage::ErrorCode::Misc);
+        emit Message("Face " + QString::number((uint64_t)&(*f), 16) + " | " +
+                     "Aresta " + QString::number((uint64_t)f->GetEdge(), 16) + " |", ErrorMessage::ErrorCode::Misc);
         f++;
     }
 }
 
-void WorkerGeometry::PrintVerticesFromFace(size_t f){
+void WorkerGeometry::PrintVerticesFromFace(QString str){
+/*
     QHash<size_t, Edge>::Iterator eBegin, curredge;
     QHash<size_t, Face>::Iterator face = _faces.find(f);
     QString text;
@@ -733,9 +505,11 @@ void WorkerGeometry::PrintVerticesFromFace(size_t f){
 
     text.append(" e " + QString::number((int)curredge->GetVerticeDestination()) + ".");
     emit Message(text, ErrorMessage::ErrorCode::Misc);
+*/
 }
 
-void WorkerGeometry::PrintFacesFromEdge(size_t e){
+void WorkerGeometry::PrintFacesFromEdge(QString str){
+/*
     QHash<size_t, Edge>::Iterator itr = _edges.find(e);
     QString text;
 
@@ -760,13 +534,16 @@ void WorkerGeometry::PrintFacesFromEdge(size_t e){
                     QString::number((int)itr->GetFaceRight()) + " ao seu lado direito.");
 
     emit Message(text, ErrorMessage::ErrorCode::Misc);
+*/
 }
 
-void WorkerGeometry::PrintEdgesFromVertice(size_t v){
+void WorkerGeometry::PrintEdgesFromVertice(QString str){
 
     //TEMP
     emit Message("Não Implementado.", ErrorMessage::ErrorCode::Misc);
     return;
+
+    /*
 
     QHash<size_t, Edge>::Iterator curredge, eBegin;
     QHash<size_t, Vertice>::Iterator vertice = _vertices.find(v);
@@ -803,7 +580,7 @@ void WorkerGeometry::PrintEdgesFromVertice(size_t v){
     }else{
 
     }
-
+    */
 }
 
 void WorkerGeometry::AddOperation(float x, float y, float z, Operation::OpType op){

@@ -93,14 +93,14 @@ void MainWindow::SetVerticeList(QStringList list){
 void MainWindow::SetEdgeList(QStringList list){
     _ui->listEdges->clear();
     _ui->listEdges->addItems(list);
-    _ui->lineVOri->clear();
-    _ui->lineVDest->clear();
+    _ui->lineVDown->clear();
+    _ui->lineVUp->clear();
     _ui->lineFDir->clear();
     _ui->lineFEsq->clear();
-    _ui->lineDirIn->clear();
-    _ui->lineDirOut->clear();
-    _ui->lineEsqIn->clear();
-    _ui->lineEsqOut->clear();
+    _ui->lineDirUp->clear();
+    _ui->lineDirDown->clear();
+    _ui->lineEsqUp->clear();
+    _ui->lineEsqDown->clear();
 }
 
 void MainWindow::SetFaceList(QStringList list){
@@ -113,22 +113,22 @@ void MainWindow::SetSelectedVerticeData(Vertice v){
     _ui->lineXVer->setText(QString::number(v.GetX()));
     _ui->lineYVer->setText(QString::number(v.GetY()));
     _ui->lineZVer->setText(QString::number(v.GetZ()));
-    _ui->lineEdVer->setText(QString::number((int)v.GetIncidentEdge()));
+    _ui->lineEdVer->setText(QString::number((uint64_t)v.GetIncidentEdge(), 16));
 }
 
 void MainWindow::SetSelectedEdgeData(Edge e){
-    _ui->lineVOri->setText(QString::number((int)e.GetVerticeOrigin()));
-    _ui->lineVDest->setText(QString::number((int)e.GetVerticeDestination()));
-    _ui->lineFDir->setText(QString::number((int)e.GetFaceRight()));
-    _ui->lineFEsq->setText(QString::number((int)e.GetFaceLeft()));
-    _ui->lineDirIn->setText(QString::number((int)e.GetEdgeRightIn()));
-    _ui->lineDirOut->setText(QString::number((int)e.GetEdgeRightOut()));
-    _ui->lineEsqIn->setText(QString::number((int)e.GetEdgeLeftIn()));
-    _ui->lineEsqOut->setText(QString::number((int)e.GetEdgeLeftOut()));
+    _ui->lineVDown->setText(QString::number((uint64_t)e.GetVerticeDown(), 16));
+    _ui->lineVUp->setText(QString::number((uint64_t)e.GetVerticeUp(), 16));
+    _ui->lineFDir->setText(QString::number((uint64_t)e.GetFaceRight(), 16));
+    _ui->lineFEsq->setText(QString::number((uint64_t)e.GetFaceLeft(), 16));
+    _ui->lineDirUp->setText(QString::number((uint64_t)e.GetEdgeRightUp(), 16));
+    _ui->lineDirDown->setText(QString::number((uint64_t)e.GetEdgeRightDown(), 16));
+    _ui->lineEsqUp->setText(QString::number((uint64_t)e.GetEdgeLeftUp(), 16));
+    _ui->lineEsqDown->setText(QString::number((uint64_t)e.GetEdgeLeftDown(), 16));
 }
 
 void MainWindow::SetSelectedFaceData(Face f){
-    _ui->lineEdgOfFace->setText(QString::number((int)f.GetEdge()));
+    _ui->lineEdgOfFace->setText(QString::number((uint64_t)f.GetEdge(), 16));
 }
 
 void MainWindow::SetOperationMatrix(QMatrix4x4 M){
@@ -236,15 +236,15 @@ bool MainWindow::StartThreadGeometry(){
 }
 
 void MainWindow::On_listVertices_SelectionChanged(int idx){
-    emit GetSelectedVertice(_ui->listVertices->item(idx)->text().split(' ', Qt::SkipEmptyParts)[1].toULongLong());
+    emit GetSelectedVertice(_ui->listVertices->item(idx)->text());
 }
 
 void MainWindow::On_listEdges_SelectionChanged(int idx){
-    emit GetSelectedEdge(_ui->listEdges->item(idx)->text().split(' ', Qt::SkipEmptyParts)[1].toULongLong());
+    emit GetSelectedEdge(_ui->listEdges->item(idx)->text());
 }
 
 void MainWindow::On_listFaces_SelectionChanged(int idx){
-    emit GetSelectedFace(_ui->listFaces->item(idx)->text().split(' ', Qt::SkipEmptyParts)[1].toULongLong());
+    emit GetSelectedFace(_ui->listFaces->item(idx)->text());
 }
 
 void MainWindow::On_listOperations_SelectionChanged(int idx){
@@ -378,15 +378,15 @@ void MainWindow::On_buttonClearConsole_Clicked(){
 
 void MainWindow::On_buttonVerticesFromFace_Clicked(){
     if(_ui->listFaces->selectedItems().size())
-        emit PrintVerticesFromFace(_ui->listFaces->selectedItems()[0]->text().split(' ', Qt::SkipEmptyParts)[1].toULongLong());
+        emit PrintVerticesFromFace(_ui->listFaces->selectedItems()[0]->text());
 }
 
 void MainWindow::On_buttonFacesFromEdge_Clicked(){
     if(_ui->listEdges->selectedItems().size())
-        emit PrintFacesFromEdge(_ui->listEdges->selectedItems()[0]->text().split(' ', Qt::SkipEmptyParts)[1].toULongLong());
+        emit PrintFacesFromEdge(_ui->listEdges->selectedItems()[0]->text());
 }
 
 void MainWindow::On_buttonEdgesFromVertices_Clicked(){
     if(_ui->listVertices->selectedItems().size())
-        emit PrintEdgesFromVertice(_ui->listVertices->selectedItems()[0]->text().split(' ', Qt::SkipEmptyParts)[1].toULongLong());
+        emit PrintEdgesFromVertice(_ui->listVertices->selectedItems()[0]->text());
 }

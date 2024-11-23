@@ -1,91 +1,206 @@
 #include "edge.h"
 
-Edge::Edge(size_t vertice_Origin, size_t vertice_Destination,
-           size_t face_left, size_t face_right,
-           size_t left_in, size_t left_out,
-           size_t right_in, size_t right_out){
-
-    SetVerticeOrigin(vertice_Origin);
-    SetVerticeDestination(vertice_Destination);
+Edge::    Edge(Vertice *vertice_Up, Vertice *vertice_Down,
+           Face *face_left, Face *face_right,
+           Edge *left_up, Edge *left_down, Edge *right_up, Edge *right_down){
+    SetVerticeUp(vertice_Up);
+    SetVerticeDown(vertice_Down);
     SetFaceLeft(face_left);
     SetFaceRight(face_right);
-    SetEdgeLeftIn(left_in);
-    SetEdgeLeftOut(left_out);
-    SetEdgeRightIn(right_in);
-    SetEdgeRightOut(right_out);
+    SetEdgeLeftUp(left_up);
+    SetEdgeLeftDown(left_down);
+    SetEdgeRightUp(right_up);
+    SetEdgeRightDown(right_down);
 }
 
-bool Edge::operator==(const Edge &other) const{
+bool Edge::operator==(Edge &other){
+    return IsEquivalent(other.GetVerticeUp(), other.GetVerticeDown());
+}
 
-    if(_vOrigin == other._vOrigin && _vDestination == other._vDestination)
+bool Edge::HasNullFace(){
+    if(GetFaceLeft() == nullptr)
         return true;
-
-    if(_vOrigin == other._vDestination && _vDestination == other._vOrigin)
+    else if(GetFaceRight() == nullptr)
         return true;
 
     return false;
 }
 
-void Edge::SetVerticeOrigin(size_t v){
-    _vOrigin = v;
+bool Edge::IsEquivalent(Vertice *v1, Vertice *v2){
+    if(GetVerticeUp() == v1 && GetVerticeDown() == v2)
+        return true;
+    else if(GetVerticeUp() == v2 && GetVerticeDown() == v1)
+        return true;
+
+    return false;
 }
 
-void Edge::SetVerticeDestination(size_t v){
-    _vDestination = v;
+bool Edge::SetNullSide(Face *f, Edge *e1, Edge *e2){
+    if(GetFaceRight() == nullptr){
+        SetFaceRight(f);
+        if(e1 != nullptr){
+            if(e1->HasVertice(_vUp))
+                SetEdgeRightUp(e1);
+            else if(e1->HasVertice(_vDown))
+                SetEdgeRightDown(e1);
+        }
+
+        if(e2 != nullptr){
+            if(e2->HasVertice(_vUp))
+                SetEdgeRightUp(e2);
+            else if(e2->HasVertice(_vDown))
+                SetEdgeRightDown(e2);
+        }
+        return true;
+    }else if(GetFaceLeft() == nullptr){
+        SetFaceLeft(f);
+        if(e1 != nullptr){
+            if(e1->HasVertice(_vUp))
+                SetEdgeLeftUp(e1);
+            else if(e1->HasVertice(_vDown))
+                SetEdgeLeftDown(e1);
+        }
+
+        if(e2 != nullptr){
+            if(e2->HasVertice(_vUp))
+                SetEdgeLeftUp(e2);
+            else if(e2->HasVertice(_vDown))
+                SetEdgeLeftDown(e2);
+        }
+        return true;
+    }
+
+    return false;
 }
 
-void Edge::SetFaceLeft(size_t f){
+bool Edge::SetEdge(Edge *e, Face *f){
+    if(e == nullptr || f == nullptr)
+        return false;
+
+    if(e->HasVertice(GetVerticeUp())){
+        if(f == GetFaceLeft()){
+            SetEdgeLeftUp(e);
+            return true;
+        }else if(f == GetFaceRight()){
+            SetEdgeRightUp(e);
+            return true;
+        }
+    }else if(e->HasVertice(GetVerticeDown())){
+        if(f == GetFaceLeft()){
+            SetEdgeLeftDown(e);
+            return true;
+        }else if(f == GetFaceRight()){
+            SetEdgeRightDown(e);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool Edge::HasVertice(Vertice *v){
+    if(v == _vUp)
+        return true;
+    else if(v == _vDown)
+        return true;
+    return false;
+}
+
+void Edge::SetVerticeUp(Vertice *v){
+    _vUp = v;
+}
+
+void Edge::SetVerticeDown(Vertice *v){
+    _vDown = v;
+}
+
+void Edge::SetFaceLeft(Face *f){
     _fLeft = f;
 }
 
-void Edge::SetFaceRight(size_t f){
+void Edge::SetFaceRight(Face *f){
     _fRight = f;
 }
 
-void Edge::SetEdgeLeftIn(size_t e){
-    _eLeft_In = e;
+void Edge::SetEdgeLeftUp(Edge *e){
+    _eLeft_Up = e;
 }
 
-void Edge::SetEdgeLeftOut(size_t e){
-    _eLeft_Out = e;
+void Edge::SetEdgeLeftDown(Edge *e){
+    _eLeft_Down = e;
 }
 
-void Edge::SetEdgeRightIn(size_t e){
-    _eRight_In = e;
+void Edge::SetEdgeRightUp(Edge *e){
+    _eRight_Up = e;
 }
 
-void Edge::SetEdgeRightOut(size_t e){
-    _eRight_Out = e;
+void Edge::SetEdgeRightDown(Edge *e){
+    _eRight_Down = e;
 }
 
-size_t Edge::GetVerticeOrigin() const{
-    return _vOrigin;
+Vertice *Edge::GetVerticeUp(){
+    return _vUp;
 }
 
-size_t Edge::GetVerticeDestination() const{
-    return _vDestination;
+Vertice *Edge::GetVerticeDown(){
+    return _vDown;
 }
 
-size_t Edge::GetFaceLeft() const{
+Face *Edge::GetFaceLeft(){
     return _fLeft;
 }
 
-size_t Edge::GetFaceRight() const{
+Face *Edge::GetFaceRight(){
     return _fRight;
 }
 
-size_t Edge::GetEdgeLeftIn() const{
-    return _eLeft_In;
+Face *Edge::GetValidFace(){
+    return (GetFaceRight()==nullptr ? GetFaceLeft() : GetFaceRight());
 }
 
-size_t Edge::GetEdgeLeftOut() const{
-    return _eLeft_Out;
+Edge *Edge::GetNextEdge(Edge *before){
+
+    if(before == GetEdgeRightUp())
+        return GetEdgeRightDown();
+    else if(before == GetEdgeRightDown())
+        return GetEdgeRightUp();
+    else if(before == GetEdgeLeftUp())
+        return GetEdgeLeftDown();
+    else if(before == GetEdgeLeftDown())
+        return GetEdgeLeftUp();
+
+    return nullptr;
 }
 
-size_t Edge::GetEdgeRightIn() const{
-    return _eRight_In;
+Edge *Edge::GetNextEdge(Edge *before, Face *f){
+
+    if(f == GetFaceRight()){
+        if(GetEdgeRightUp() == before)
+            return GetEdgeRightDown();
+        else if(GetEdgeRightDown() == before)
+            return GetEdgeRightUp();
+    }else if(f == GetFaceLeft()){
+        if(before == GetEdgeLeftUp())
+            return GetEdgeLeftDown();
+        else if(before == GetEdgeLeftDown())
+            return GetEdgeLeftUp();
+    }
+
+    return nullptr;
 }
 
-size_t Edge::GetEdgeRightOut() const{
-    return _eRight_Out;
+Edge *Edge::GetEdgeLeftUp(){
+    return _eLeft_Up;
+}
+
+Edge *Edge::GetEdgeLeftDown(){
+    return _eLeft_Down;
+}
+
+Edge *Edge::GetEdgeRightUp(){
+    return _eRight_Up;
+}
+
+Edge *Edge::GetEdgeRightDown(){
+    return _eRight_Down;
 }

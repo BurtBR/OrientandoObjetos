@@ -1,7 +1,7 @@
 #include "vertice.h"
 
 
-Vertice::Vertice(float x, float y, float z, float w, size_t incident){
+Vertice::Vertice(float x, float y, float z, float w, Edge *incident){
     SetX(x);
     SetY(y);
     SetZ(z);
@@ -22,6 +22,12 @@ bool Vertice::operator==(const Vertice &other) const{
            GetY() == other.GetY() &&
            GetZ() == other.GetZ() &&
            GetW() == other.GetW());
+}
+
+bool Vertice::HasIncidentEdge(){
+    if(_incident == nullptr)
+        return false;
+    return true;
 }
 
 void Vertice::SetPosition(QGenericMatrix<1, 4, float> pos){
@@ -51,11 +57,11 @@ void Vertice::SetXYZW(float x, float y, float z, float w){
     SetW(w);
 }
 
-void Vertice::SetIncidentEdge(size_t e){
+void Vertice::SetIncidentEdge(Edge *e){
     _incident = e;
 }
 
-QGenericMatrix<1, 4, float> Vertice::GetPosition() const{
+QGenericMatrix<1, 4, float> Vertice::GetPosition(){
     return _position;
 }
 
@@ -75,6 +81,6 @@ float Vertice::GetW() const{
     return _position.constData()[3];
 }
 
-size_t Vertice::GetIncidentEdge() const{
+Edge *Vertice::GetIncidentEdge() const {
     return _incident;
 }

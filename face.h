@@ -1,16 +1,16 @@
 #ifndef FACE_H
 #define FACE_H
 
-#include <cstddef>
+class Edge;
 
 class Face{
 private:
-    size_t _edge = -1;
+    Edge *_edge;
 public:
-    Face(size_t edge = -1);
+    Face(Edge *edge = nullptr);
 
-    void SetEdge(size_t e);
-    size_t GetEdge() const;
+    void SetEdge(Edge *e);
+    Edge *GetEdge();
 };
 
 #endif // FACE_H

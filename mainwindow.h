@@ -69,13 +69,13 @@ private slots:
 
 signals:
     void OpenObj(QString filename);
-    void GetSelectedVertice(size_t id);
-    void GetSelectedEdge(size_t id);
-    void GetSelectedFace(size_t id);
+    void GetSelectedVertice(QString str);
+    void GetSelectedEdge(QString str);
+    void GetSelectedFace(QString str);
     void PrintAllData();
-    void PrintVerticesFromFace(size_t f);
-    void PrintFacesFromEdge(size_t e);
-    void PrintEdgesFromVertice(size_t v);
+    void PrintVerticesFromFace(QString str);
+    void PrintFacesFromEdge(QString str);
+    void PrintEdgesFromVertice(QString str);
     void AddOperation(float x, float y, float z, Operation::OpType op);
     void RemoveOperation(size_t idx);
     void MoveOperationUp(size_t idx);

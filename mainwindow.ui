@@ -416,7 +416,7 @@ QListWidget{
           <string notr="true"/>
          </property>
          <property name="currentIndex">
-          <number>4</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="pageMT"/>
          <widget class="QWidget" name="pageVertices">
@@ -577,7 +577,7 @@ QListWidget{
            <item>
             <layout class="QGridLayout" name="gridLayout_2">
              <item row="8" column="1">
-              <widget class="QLineEdit" name="lineEsqOut">
+              <widget class="QLineEdit" name="lineEsqDown">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -613,12 +613,12 @@ QListWidget{
              <item row="7" column="0">
               <widget class="QLabel" name="label_13">
                <property name="text">
-                <string>Esq. In.:</string>
+                <string>Esq. Up:</string>
                </property>
               </widget>
              </item>
              <item row="5" column="1">
-              <widget class="QLineEdit" name="lineDirIn">
+              <widget class="QLineEdit" name="lineDirUp">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -630,12 +630,12 @@ QListWidget{
              <item row="8" column="0">
               <widget class="QLabel" name="label_14">
                <property name="text">
-                <string>Esq. Out.:</string>
+                <string>Esq. Down:</string>
                </property>
               </widget>
              </item>
              <item row="7" column="1">
-              <widget class="QLineEdit" name="lineEsqIn">
+              <widget class="QLineEdit" name="lineEsqUp">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -647,7 +647,7 @@ QListWidget{
              <item row="6" column="0">
               <widget class="QLabel" name="label_12">
                <property name="text">
-                <string>Dir. Out.:</string>
+                <string>Dir. Down:</string>
                </property>
               </widget>
              </item>
@@ -664,12 +664,12 @@ QListWidget{
              <item row="5" column="0">
               <widget class="QLabel" name="label_11">
                <property name="text">
-                <string>Dir. In.:</string>
+                <string>Dir. Up:</string>
                </property>
               </widget>
              </item>
              <item row="6" column="1">
-              <widget class="QLineEdit" name="lineDirOut">
+              <widget class="QLineEdit" name="lineDirDown">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -681,19 +681,19 @@ QListWidget{
              <item row="1" column="0">
               <widget class="QLabel" name="label_15">
                <property name="text">
-                <string>V. Ori.:</string>
+                <string>V. Down:</string>
                </property>
               </widget>
              </item>
              <item row="0" column="0">
               <widget class="QLabel" name="label_16">
                <property name="text">
-                <string>V. Dest:</string>
+                <string>V. Up:</string>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="lineVOri">
+              <widget class="QLineEdit" name="lineVDown">
                <property name="readOnly">
                 <bool>true</bool>
                </property>
@@ -703,7 +703,7 @@ QListWidget{
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="lineVDest">
+              <widget class="QLineEdit" name="lineVUp">
                <property name="readOnly">
                 <bool>true</bool>
                </property>

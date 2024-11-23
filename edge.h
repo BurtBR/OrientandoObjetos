@@ -1,35 +1,51 @@
 #ifndef EDGE_H
 #define EDGE_H
 
-#include <cstddef>
+#include "vertice.h"
+#include "face.h"
 
 class Edge{
 private:
-    size_t _vOrigin, _vDestination, _fLeft, _fRight, _eLeft_In, _eLeft_Out, _eRight_In, _eRight_Out;
+    Vertice *_vUp, *_vDown;
+    Face *_fLeft, *_fRight;
+    Edge *_eLeft_Up, *_eLeft_Down, *_eRight_Up, *_eRight_Down;
 public:
-    Edge(size_t vertice_Origin = -1, size_t vertice_Destination = -1,
-         size_t face_left = -1, size_t face_right = -1,
-         size_t left_in = -1, size_t left_out = -1,
-         size_t right_in = -1, size_t right_out = -1);
+    Edge(Vertice *vertice_Up = nullptr,
+         Vertice *vertice_Down = nullptr,
+         Face *face_left = nullptr,
+         Face *face_right = nullptr,
+         Edge *left_up = nullptr,
+         Edge *left_down = nullptr,
+         Edge *right_up = nullptr,
+         Edge *right_down = nullptr);
 
-    bool operator==(const Edge &other) const;
+    bool operator==(Edge &other);
 
-    void SetVerticeOrigin(size_t v);
-    void SetVerticeDestination(size_t v);
-    void SetFaceLeft(size_t f);
-    void SetFaceRight(size_t f);
-    void SetEdgeLeftIn(size_t e);
-    void SetEdgeLeftOut(size_t e);
-    void SetEdgeRightIn(size_t e);
-    void SetEdgeRightOut(size_t e);
-    size_t GetVerticeOrigin() const;
-    size_t GetVerticeDestination() const;
-    size_t GetFaceLeft() const;
-    size_t GetFaceRight() const;
-    size_t GetEdgeLeftIn() const;
-    size_t GetEdgeLeftOut() const;
-    size_t GetEdgeRightIn() const;
-    size_t GetEdgeRightOut() const;
+    bool HasNullFace();
+    bool IsEquivalent(Vertice *v1, Vertice *v2);
+    bool SetNullSide(Face *f, Edge *e1, Edge *e2);
+    bool SetEdge(Edge *e, Face *f);
+    bool HasVertice(Vertice *v);
+
+    void SetVerticeUp(Vertice *v);
+    void SetVerticeDown(Vertice *v);
+    void SetFaceLeft(Face *f);
+    void SetFaceRight(Face *f);
+    void SetEdgeLeftUp(Edge *e);
+    void SetEdgeLeftDown(Edge *e);
+    void SetEdgeRightUp(Edge *e);
+    void SetEdgeRightDown(Edge *e);
+    Vertice *GetVerticeUp();
+    Vertice *GetVerticeDown();
+    Face *GetFaceLeft();
+    Face *GetFaceRight();
+    Face *GetValidFace();
+    Edge *GetNextEdge(Edge *before = nullptr);
+    Edge *GetNextEdge(Edge *before, Face *f);
+    Edge *GetEdgeLeftUp();
+    Edge *GetEdgeLeftDown();
+    Edge *GetEdgeRightUp();
+    Edge *GetEdgeRightDown();
 };
 
 #endif // EDGE_H

@@ -2,7 +2,7 @@
 #define WORKERGEOMETRY_H
 
 #include <QObject>
-#include <QHash>
+#include <list>
 #include "errormessage.h"
 #include "vertice.h"
 #include "edge.h"
@@ -12,26 +12,23 @@
 class WorkerGeometry : public QObject{
     Q_OBJECT
 private:
-    QHash<size_t, Vertice> _vertices;
-    QHash<size_t, Edge> _edges;
-    QHash<size_t, Face> _faces;
+
+    std::list<Vertice> _vertices;
+    std::list<Edge> _edges;
+    std::list<Face> _faces;
     QVector<Operation> _ops;
     QMatrix4x4 _opMatrix;
 
+    void ClearGeometry();
+    void FailedToOpenObj();
     bool StrToFloat(const QString &str, float &number);
+    uint64_t StrToAddr(QString str);
     void ParseFileData();
-    QHash<size_t, Edge>::Iterator FindEquivalentEdge(size_t edge);
-    void CheckDuplicateVertices();
+    Edge *FindEquivalentEdge(Edge *e);
+    Edge *FindEdge(Vertice *v1, Vertice *v2);
     void CheckVerticesIncidentEdges();
     void ReplaceVerticeReference(size_t from, size_t to);
     void ReplaceEdgeReferences(size_t from, size_t to);
-    void SetFaceToSide(size_t face, size_t startedge, bool left = true);
-    void FlipFaceEdges(size_t face);
-    void FlipFaceEdgesHorizontal(size_t face);
-    void FlipFaceEdgesVertical(size_t face);
-    void FlipEdge(QHash<size_t, Edge>::Iterator &e);
-    void FlipEdgeVerticalAxis(QHash<size_t, Edge>::Iterator &e);
-    void FlipEdgeHorizontalAxis(QHash<size_t, Edge>::Iterator &e);
     void SendVerticeList();
     void SendEdgeList();
     void SendFaceList();
@@ -43,14 +40,14 @@ public:
     ~WorkerGeometry();
 
 public slots:
-    void GetSelectedVertice(size_t id);
-    void GetSelectedEdge(size_t id);
-    void GetSelectedFace(size_t id);
+    void GetSelectedVertice(QString str);
+    void GetSelectedEdge(QString str);
+    void GetSelectedFace(QString str);
     void OpenObj(QString filename);
     void PrintAllData();
-    void PrintVerticesFromFace(size_t f);
-    void PrintFacesFromEdge(size_t e);
-    void PrintEdgesFromVertice(size_t v);
+    void PrintVerticesFromFace(QString str);
+    void PrintFacesFromEdge(QString str);
+    void PrintEdgesFromVertice(QString str);
     void AddOperation(float x, float y, float z, Operation::OpType op);
     void RemoveOperation(size_t idx);
     void MoveOperationUp(size_t idx);
