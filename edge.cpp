@@ -201,6 +201,22 @@ Edge *Edge::GetNextEdge(Edge *before, Face *f){
     return nullptr;
 }
 
+Edge *Edge::GetNextEdge(Edge *before, Vertice *v){
+    if(v == GetVerticeUp()){
+        if(before == GetEdgeRightUp())
+            return GetEdgeLeftUp();
+        else if(before == GetEdgeLeftUp())
+            return GetEdgeRightUp();
+    }else if(v == GetVerticeDown()){
+        if(before == GetEdgeRightDown())
+            return GetEdgeLeftDown();
+        else if(before == GetEdgeLeftDown())
+            return GetEdgeRightDown();
+    }
+
+    return nullptr;
+}
+
 Edge *Edge::GetEdgeLeftUp(){
     return _eLeft_Up;
 }
@@ -215,4 +231,22 @@ Edge *Edge::GetEdgeRightUp(){
 
 Edge *Edge::GetEdgeRightDown(){
     return _eRight_Down;
+}
+
+Edge *Edge::GetRightEdge(Vertice *v){
+    if(v == GetVerticeUp())
+        return GetEdgeRightUp();
+    else if(v == GetVerticeDown())
+        return GetEdgeRightDown();
+
+    return nullptr;
+}
+
+Edge *Edge::GetLeftEdge(Vertice *v){
+    if(v == GetVerticeUp())
+        return GetEdgeLeftUp();
+    else if(v == GetVerticeDown())
+        return GetEdgeLeftDown();
+
+    return nullptr;
 }

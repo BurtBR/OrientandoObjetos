@@ -101,9 +101,9 @@ bool WorkerGeometry::InsertFace(QStringList list, QVector<Vertice *> &vectorvert
             otheredge->SetEdge(curredge, currface);
 
             if(vectorvertices[destination]->GetIncidentEdge() == nullptr)
-                vectorvertices[destination]->SetIncidentEdge(curredge);
+                vectorvertices[destination]->SetIncidentEdge(otheredge);
             else if(vectorvertices[origin]->GetIncidentEdge() == nullptr)
-                vectorvertices[origin]->SetIncidentEdge(curredge);
+                vectorvertices[origin]->SetIncidentEdge(otheredge);
         }else if(!otheredge->SetNullSide(currface, curredge, nullptr)){
             emit Message("Vértice compartilha mais de 2 faces: " + list.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
             return false;
@@ -127,9 +127,9 @@ bool WorkerGeometry::InsertFace(QStringList list, QVector<Vertice *> &vectorvert
             otheredge->SetEdge(curredge, currface);
 
             if(vectorvertices[destination]->GetIncidentEdge() == nullptr)
-                vectorvertices[destination]->SetIncidentEdge(curredge);
+                vectorvertices[destination]->SetIncidentEdge(otheredge);
             else if(vectorvertices[origin]->GetIncidentEdge() == nullptr)
-                vectorvertices[origin]->SetIncidentEdge(curredge);
+                vectorvertices[origin]->SetIncidentEdge(otheredge);
         }else if(!otheredge->SetNullSide(currface, curredge, nullptr)){
                 emit Message("Vértice compartilha mais de 2 faces: " + list.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
                 return false;
@@ -468,48 +468,46 @@ void WorkerGeometry::PrintFacesFromEdge(QString str){
 
 void WorkerGeometry::PrintEdgesFromVertice(QString str){
 
-    //TEMP
-    emit Message("Não Implementado.", ErrorMessage::ErrorCode::Misc);
-    return;
-
-    /*
-
-    QHash<size_t, Edge>::Iterator curredge, eBegin;
-    QHash<size_t, Vertice>::Iterator vertice = _vertices.find(v);
+    Vertice *vertice = (Vertice*)StrToAddr(str);
+    Edge *ebegin, *prevedge, *curredge, *nextedge;
     QString text;
-    size_t next;
 
-    if(vertice == _vertices.end()){
-        emit Message("Vértice " + QString::number((int)v) + " não encontrado.", ErrorMessage::ErrorCode::Misc);
+    if(vertice == nullptr){
+        emit Message(str + " não encontrado.", ErrorMessage::ErrorCode::Misc);
         return;
     }
 
-    eBegin = _edges.find(vertice->GetIncidentEdge());
-
-    if(eBegin == _edges.end()){
-        emit Message("Referência inválida para aresta no vértice " + QString::number((int)v) + ".", ErrorMessage::ErrorCode::Misc);
+    ebegin = vertice->GetIncidentEdge();
+    if(ebegin == nullptr){
+        emit Message("Referência inválida para aresta no " + str + ".", ErrorMessage::ErrorCode::Misc);
         return;
     }
 
-    text = "O vértice " + QString::number((int)v) + " compartilha as arestas " + QString::number((int)eBegin.key());
+    text = "O " + str + " compartilha as arestas " + QString::number((uint64_t)ebegin, 16);
 
-    curredge = eBegin;
-    if(curredge->GetFaceLeft() == -1){
-        next = curredge->GetEdgeRightOut();
-        while(next != -1){
-            text.append(", " + QString::number((int)next));
-            curredge = _edges.find(next);
-            if(curredge == _edges.end()){
-                emit Message("Referência inválida para vértice.", ErrorMessage::ErrorCode::Misc);
-                return;
-            }
+    curredge = ebegin;
+    nextedge = curredge->GetNextEdge(curredge->GetRightEdge(vertice), vertice);
+
+    while(nextedge != nullptr && nextedge != ebegin){
+        text.append(", " + QString::number((uint64_t)nextedge, 16));
+        prevedge = curredge;
+        curredge = nextedge;
+        nextedge = nextedge->GetNextEdge(prevedge, vertice);
+    }
+
+    if(nextedge == nullptr){
+        curredge = ebegin;
+        nextedge = curredge->GetNextEdge(curredge->GetLeftEdge(vertice), vertice);
+
+        while(nextedge != nullptr && nextedge != ebegin){
+            text.append(", " + QString::number((uint64_t)nextedge, 16));
+            prevedge = curredge;
+            curredge = nextedge;
+            nextedge = nextedge->GetNextEdge(prevedge, vertice);
         }
-    }else if(curredge->GetFaceRight() == -1){
-
-    }else{
-
     }
-    */
+
+    emit Message(text, ErrorMessage::ErrorCode::Misc);
 }
 
 void WorkerGeometry::AddOperation(float x, float y, float z, Operation::OpType op){

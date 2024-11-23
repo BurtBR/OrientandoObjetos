@@ -43,10 +43,13 @@ public:
     Face *GetValidFace();
     Edge *GetSomeNextEdge(Face *f);
     Edge *GetNextEdge(Edge *before, Face *f);
+    Edge *GetNextEdge(Edge *before, Vertice *v);
     Edge *GetEdgeLeftUp();
     Edge *GetEdgeLeftDown();
     Edge *GetEdgeRightUp();
     Edge *GetEdgeRightDown();
+    Edge *GetRightEdge(Vertice *v);
+    Edge *GetLeftEdge(Vertice *v);
 };
 
 #endif // EDGE_H
