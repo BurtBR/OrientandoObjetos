@@ -365,8 +365,6 @@ void WorkerGeometry::OpenObj(QString filename){
 
     unknownparameters.clear();
 
-    PrintAllData();
-
     _ops.clear();
     _opMatrix.setToIdentity();
 

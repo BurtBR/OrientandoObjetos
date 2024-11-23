@@ -25,7 +25,6 @@ private:
     void FailedToOpenObj();
     bool StrToFloat(const QString &str, float &number);
     uint64_t StrToAddr(QString str);
-    void ParseFileData();
     Edge *FindEdge(Vertice *v1, Vertice *v2);
     void SendVerticeList();
     void SendEdgeList();
