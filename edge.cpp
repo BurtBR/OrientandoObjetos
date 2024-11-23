@@ -184,20 +184,6 @@ Edge *Edge::GetSomeNextEdge(Face *f){
     return nullptr;
 }
 
-Edge *Edge::GetNextEdge(Edge *before){
-
-    if(before == GetEdgeRightUp())
-        return GetEdgeRightDown();
-    else if(before == GetEdgeRightDown())
-        return GetEdgeRightUp();
-    else if(before == GetEdgeLeftUp())
-        return GetEdgeLeftDown();
-    else if(before == GetEdgeLeftDown())
-        return GetEdgeLeftUp();
-
-    return nullptr;
-}
-
 Edge *Edge::GetNextEdge(Edge *before, Face *f){
 
     if(f == GetFaceRight()){

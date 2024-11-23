@@ -42,7 +42,6 @@ public:
     Face *GetFaceRight();
     Face *GetValidFace();
     Edge *GetSomeNextEdge(Face *f);
-    Edge *GetNextEdge(Edge *before = nullptr);
     Edge *GetNextEdge(Edge *before, Face *f);
     Edge *GetEdgeLeftUp();
     Edge *GetEdgeLeftDown();

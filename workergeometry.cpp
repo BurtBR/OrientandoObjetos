@@ -11,6 +11,139 @@ WorkerGeometry::~WorkerGeometry(){
     _opMatrix.setToIdentity();
 }
 
+bool WorkerGeometry::InsertVertice(QStringList list, QVector<Vertice*> &vectorvertices){
+    float x, y, z;
+
+    if(list.size() != 4){
+        emit Message("Valores incompatíveis de " + list[0], ErrorMessage::ErrorCode::CorruptedFile);
+        return false;
+    }
+
+    if(list[0] != "v")
+        return false;
+
+    if(!StrToFloat(list[1], x) || !StrToFloat(list[2], y) || !StrToFloat(list[3], z)){
+        emit Message("Formatação incompatível de ponto flutuante: " +
+                     list.join(' '),
+                     ErrorMessage::ErrorCode::CorruptedFile);
+        return false;
+    }else{
+        vectorvertices.append(&(*_vertices.insert(_vertices.end(), Vertice(x,y,z))));
+    }
+
+    return true;
+}
+
+bool WorkerGeometry::InsertFace(QStringList list, QVector<Vertice *> &vectorvertices){
+    Face *currface;
+    Edge *curredge, *firstedge, *otheredge;
+    size_t idx, origin, destination, firstvertice;
+
+    if(list.size() < 4){
+        emit Message("São necessários ao menos 3 pontos em uma face.", ErrorMessage::ErrorCode::CorruptedFile);
+        return false;
+    }
+
+    if(list[0] != "f")
+        return false;
+
+    currface = &(*_faces.insert(_faces.end(), Face()));
+
+    idx = list[1].split('/')[0].toLongLong()-1;
+    if(idx >= vectorvertices.size()){
+        emit Message("Índices de vértices inválidos: " + list.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+        return false;
+    }
+
+    firstvertice = idx;
+    origin = firstvertice;
+
+    idx = list[2].split('/')[0].toLongLong()-1;
+    if(idx >= vectorvertices.size()){
+        emit Message("Índices de vértices inválidos: " + list.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+        return false;
+    }
+
+    destination = idx;
+
+    curredge = FindEdge(vectorvertices[origin], vectorvertices[destination]);
+    if(curredge == nullptr){
+        curredge = &(*_edges.insert(_edges.end(),Edge(vectorvertices[origin], vectorvertices[destination], nullptr, currface)));
+        if(vectorvertices[destination]->GetIncidentEdge() == nullptr)
+            vectorvertices[destination]->SetIncidentEdge(curredge);
+        else if(vectorvertices[origin]->GetIncidentEdge() == nullptr)
+            vectorvertices[origin]->SetIncidentEdge(curredge);
+    }else if(!curredge->SetNullSide(currface, nullptr, nullptr)){
+        emit Message("Vértice compartilha mais de 2 faces: " + list.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+        return false;
+    }
+
+    currface->SetEdge(curredge);
+    firstedge = curredge;
+
+    for(int i=3; i<list.size() ;i++){
+        origin = destination;
+        idx = list[i].split('/')[0].toLongLong()-1;
+        if(idx >= vectorvertices.size()){
+            emit Message("Índices de vértices inválidos: " + list.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+            return false;
+        }
+
+        destination = idx;
+
+        otheredge = FindEdge(vectorvertices[origin], vectorvertices[destination]);
+        if(otheredge == nullptr){
+            otheredge = &(*_edges.insert(_edges.end(),
+                                         Edge(vectorvertices[origin],
+                                              vectorvertices[destination],
+                                              nullptr,
+                                              currface)));
+            otheredge->SetEdge(curredge, currface);
+
+            if(vectorvertices[destination]->GetIncidentEdge() == nullptr)
+                vectorvertices[destination]->SetIncidentEdge(curredge);
+            else if(vectorvertices[origin]->GetIncidentEdge() == nullptr)
+                vectorvertices[origin]->SetIncidentEdge(curredge);
+        }else if(!otheredge->SetNullSide(currface, curredge, nullptr)){
+            emit Message("Vértice compartilha mais de 2 faces: " + list.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+            return false;
+        }
+        curredge->SetEdge(otheredge, currface);
+        curredge = otheredge;
+    }
+
+    if(destination != firstvertice){
+        origin = destination;
+        destination = firstvertice;
+
+        otheredge = FindEdge(vectorvertices[origin], vectorvertices[destination]);
+
+        if(otheredge == nullptr){
+            otheredge = &(*_edges.insert(_edges.end(),
+                                         Edge(vectorvertices[origin],
+                                              vectorvertices[destination],
+                                              nullptr,
+                                              currface)));
+            otheredge->SetEdge(curredge, currface);
+
+            if(vectorvertices[destination]->GetIncidentEdge() == nullptr)
+                vectorvertices[destination]->SetIncidentEdge(curredge);
+            else if(vectorvertices[origin]->GetIncidentEdge() == nullptr)
+                vectorvertices[origin]->SetIncidentEdge(curredge);
+        }else if(!otheredge->SetNullSide(currface, curredge, nullptr)){
+                emit Message("Vértice compartilha mais de 2 faces: " + list.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
+                return false;
+        }
+        otheredge->SetEdge(firstedge, currface);
+        curredge->SetEdge(otheredge, currface);
+        curredge = otheredge;
+    }
+
+    firstedge->SetEdge(curredge, currface);
+
+    return true;
+}
+
 void WorkerGeometry::ClearGeometry(){
     _edges.clear();
     _vertices.clear();
@@ -62,83 +195,6 @@ Edge *WorkerGeometry::FindEdge(Vertice *v1, Vertice *v2){
         itr++;
     }
     return nullptr;
-}
-
-void WorkerGeometry::CheckVerticesIncidentEdges(){
-/*
-    QHash<size_t, Vertice>::Iterator v = _vertices.begin();
-    QHash<size_t, Edge>::Iterator e;
-    QVector<size_t> wrongvertices;
-
-    while(v != _vertices.end()){
-        if(v->GetIncidentEdge() == -1)
-            wrongvertices.append(v.key());
-        v++;
-    }
-
-    if(!wrongvertices.size())
-        return;
-
-    e = _edges.begin();
-
-    while(wrongvertices.size()){
-        if(wrongvertices.contains(e->GetVerticeDestination())){
-            _vertices.find(e->GetVerticeDestination())->SetIncidentEdge(e.key());
-            wrongvertices.removeOne(e->GetVerticeDestination());
-        }
-        e++;
-    }
-*/
-}
-
-void WorkerGeometry::ReplaceVerticeReference(size_t from, size_t to){
-/*
-    QHash<size_t, Edge>::Iterator itr = _edges.begin();
-
-    while(itr != _edges.end()){
-
-        if(itr->GetVerticeOrigin() == from){
-            itr->SetVerticeOrigin(to);
-        }else if(itr->GetVerticeDestination() == from){
-            itr->SetVerticeDestination(to);
-        }
-
-        itr++;
-    }
-*/
-}
-
-void WorkerGeometry::ReplaceEdgeReferences(size_t from, size_t to){
-/*
-    QHash<size_t, Vertice>::Iterator v = _vertices.begin();
-    QHash<size_t, Edge>::Iterator e = _edges.begin();
-    QHash<size_t, Face>::Iterator f = _faces.begin();
-
-    while(v != _vertices.end()){
-        if(v->GetIncidentEdge() == from){
-            v->SetIncidentEdge(to);
-        }
-        v++;
-    }
-
-    while(e != _edges.end()){
-        if(e->GetEdgeLeftIn() == from)
-            e->SetEdgeLeftIn(to);
-        if(e->GetEdgeLeftOut() == from)
-            e->SetEdgeLeftOut(to);
-        if(e->GetEdgeRightIn() == from)
-            e->SetEdgeRightIn(to);
-        if(e->GetEdgeRightOut() == from)
-            e->SetEdgeRightOut(to);
-        e++;
-    }
-
-    while(f != _faces.end()){
-        if(f->GetEdge() == from)
-            f->SetEdge(to);
-        f++;
-    }
-*/
 }
 
 void WorkerGeometry::SendVerticeList(){
@@ -219,11 +275,7 @@ void WorkerGeometry::OpenObj(QString filename){
     QFile fp(filename);
     QFileInfo fileinfo(fp);
     QStringList strlist, unknownparameters;
-    float x, y, z;
     QVector<Vertice *> vectorvertices;
-    Face *currface = nullptr;
-    Edge *curredge = nullptr, *firstedge = nullptr, *otheredge;
-    size_t idx, origin, destination, firstvertice;
 
     if(!fileinfo.exists()){
         emit Message("O arquivo não existe.", ErrorMessage::ErrorCode::FailedToOpenFile);
@@ -247,20 +299,11 @@ void WorkerGeometry::OpenObj(QString filename){
             switch(strlist[0][0].toLatin1()){
 
             case 'v':
-                if(strlist.size() != 4){
-                    emit Message("Valores incompatíveis de " + strlist[0], ErrorMessage::ErrorCode::CorruptedFile);
-                    return FailedToOpenObj();
-                }else if(strlist[0].size() == 1){ // Vertice
-
-                    if(!StrToFloat(strlist[1], x) || !StrToFloat(strlist[2], y) || !StrToFloat(strlist[3], z)){
-                        emit Message("Formatação incompatível de ponto flutuante: " +
-                                     strlist[1] + " " + strlist[2] + " " + strlist[3],
-                                     ErrorMessage::ErrorCode::CorruptedFile);
+                if(strlist[0].size() == 1){ // Vertice
+                    if(!InsertVertice(strlist, vectorvertices)){
+                        fp.close();
                         return FailedToOpenObj();
-                    }else{
-                        vectorvertices.append(&(*_vertices.insert(_vertices.end(), Vertice(x,y,z))));
                     }
-
                 }else{
                     switch(strlist[0][1].toLatin1()){
                     //case 'n':
@@ -274,98 +317,10 @@ void WorkerGeometry::OpenObj(QString filename){
                 break;
 
             case 'f': // Face
-                if(strlist.size() < 4){
-                    emit Message("São necessários ao menos 3 pontos em uma face.", ErrorMessage::ErrorCode::CorruptedFile);
+                if(!InsertFace(strlist, vectorvertices)){
+                    fp.close();
                     return FailedToOpenObj();
                 }
-
-                currface = &(*_faces.insert(_faces.end(), Face()));
-
-                idx = strlist[1].split('/')[0].toLongLong()-1;
-                if(idx >= _vertices.size()){
-                    emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
-                    return FailedToOpenObj();
-                }
-
-                firstvertice = idx;
-                origin = firstvertice;
-
-                idx = strlist[2].split('/')[0].toLongLong()-1;
-
-                if(idx >= vectorvertices.size()){
-                    emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
-                    return FailedToOpenObj();
-                }
-
-                destination = idx;
-
-                otheredge = FindEdge(vectorvertices[origin], vectorvertices[destination]);
-                if(otheredge == nullptr){
-                    curredge = &(*_edges.insert(_edges.end(),Edge(vectorvertices[origin], vectorvertices[destination], nullptr, currface)));
-                    if(vectorvertices[destination]->GetIncidentEdge() == nullptr)
-                        vectorvertices[destination]->SetIncidentEdge(curredge);
-                    else if(vectorvertices[origin]->GetIncidentEdge() == nullptr)
-                        vectorvertices[origin]->SetIncidentEdge(curredge);
-                }else{
-                    curredge = otheredge;
-                    if(!curredge->SetNullSide(currface, nullptr, nullptr)){
-                        emit Message("Índices de vértice compartilha mais de 2 faces: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
-                        return FailedToOpenObj();
-                    }
-                }
-
-                currface->SetEdge(curredge);
-
-                firstedge = curredge;
-
-                for(int i=3; i<strlist.size() ;i++){
-                    origin = destination;
-                    idx = strlist[i].split('/')[0].toLongLong()-1;
-                    if(idx >= vectorvertices.size()){
-                        emit Message("Índices de vértices inválidos: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
-                        return FailedToOpenObj();
-                    }else{
-                        destination = idx;
-                        otheredge = FindEdge(vectorvertices[origin], vectorvertices[destination]);
-                        if(otheredge == nullptr){
-                            otheredge = &(*_edges.insert(_edges.end(),
-                                                         Edge(vectorvertices[origin],
-                                                              vectorvertices[destination],
-                                                              nullptr,
-                                                              currface)));
-                            otheredge->SetEdge(curredge, currface);
-
-                            if(vectorvertices[destination]->GetIncidentEdge() == nullptr)
-                                vectorvertices[destination]->SetIncidentEdge(curredge);
-                            else if(vectorvertices[origin]->GetIncidentEdge() == nullptr)
-                                vectorvertices[origin]->SetIncidentEdge(curredge);
-                        }else{
-                            if(!otheredge->SetNullSide(currface, curredge, nullptr)){
-                                emit Message("Vértice compartilha mais de 2 faces: " + strlist.join(' '), ErrorMessage::ErrorCode::CorruptedFile);
-                                return FailedToOpenObj();
-                            }
-                        }
-                        curredge->SetEdge(otheredge, currface);
-                        curredge = otheredge;
-                    }
-                }
-
-                if(destination != firstvertice){
-                    origin = destination;
-                    destination = firstvertice;
-
-                    otheredge = &(*_edges.insert(_edges.end(),Edge(vectorvertices[origin],
-                                                                   vectorvertices[destination],
-                                                                   nullptr,
-                                                                   currface)));
-                    otheredge->SetEdge(curredge, currface);
-                    otheredge->SetEdge(firstedge, currface);
-                    curredge->SetEdge(otheredge, currface);
-                    curredge = otheredge;
-                }
-
-                firstedge->SetEdge(curredge, currface);
-
                 break;
 
             case '#':
@@ -469,7 +424,7 @@ void WorkerGeometry::PrintVerticesFromFace(QString str){
         before = itr;
         itr = next;
 
-        next = itr->GetNextEdge(before);
+        next = itr->GetNextEdge(before, face);
         if(next == nullptr){
             emit Message("Dados inconsistentes, a " + str + " possui aresta inválida.", ErrorMessage::ErrorCode::Misc);
             return;

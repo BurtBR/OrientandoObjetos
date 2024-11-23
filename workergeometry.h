@@ -19,6 +19,8 @@ private:
     QVector<Operation> _ops;
     QMatrix4x4 _opMatrix;
 
+    bool InsertVertice(QStringList list, QVector<Vertice*> &vectorvertices);
+    bool InsertFace(QStringList list, QVector<Vertice*> &vectorvertices);
     void ClearGeometry();
     void FailedToOpenObj();
     bool StrToFloat(const QString &str, float &number);
@@ -26,9 +28,6 @@ private:
     void ParseFileData();
     Edge *FindEquivalentEdge(Edge *e);
     Edge *FindEdge(Vertice *v1, Vertice *v2);
-    void CheckVerticesIncidentEdges();
-    void ReplaceVerticeReference(size_t from, size_t to);
-    void ReplaceEdgeReferences(size_t from, size_t to);
     void SendVerticeList();
     void SendEdgeList();
     void SendFaceList();

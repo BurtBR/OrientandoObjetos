@@ -236,15 +236,27 @@ bool MainWindow::StartThreadGeometry(){
 }
 
 void MainWindow::On_listVertices_SelectionChanged(int idx){
-    emit GetSelectedVertice(_ui->listVertices->item(idx)->text());
+    if(idx < 0)
+        return;
+
+    if(idx < _ui->listVertices->count())
+        emit GetSelectedVertice(_ui->listVertices->item(idx)->text());
 }
 
 void MainWindow::On_listEdges_SelectionChanged(int idx){
-    emit GetSelectedEdge(_ui->listEdges->item(idx)->text());
+    if(idx < 0)
+        return;
+
+    if(idx < _ui->listEdges->count())
+        emit GetSelectedEdge(_ui->listEdges->item(idx)->text());
 }
 
 void MainWindow::On_listFaces_SelectionChanged(int idx){
-    emit GetSelectedFace(_ui->listFaces->item(idx)->text());
+    if(idx < 0)
+        return;
+
+    if(idx < _ui->listFaces->count())
+        emit GetSelectedFace(_ui->listFaces->item(idx)->text());
 }
 
 void MainWindow::On_listOperations_SelectionChanged(int idx){
@@ -271,6 +283,7 @@ void MainWindow::On_actionAbrir_triggered(bool){
 
     _ui->labelGif->setMovie(movie);
     _ui->labelGif->setScaledContents(true);
+
     movie->start();
 
     emit OpenObj(filename);
