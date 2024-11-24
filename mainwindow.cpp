@@ -81,18 +81,19 @@ void MainWindow::FileHandlingFinished(){
     _ui->labelGif->clear();
 }
 
-void MainWindow::SetVerticeList(QStringList list){
+void MainWindow::SetVerticeList(const QVector<const Vertice*> verticelist, QStringList strlist){
     _ui->listVertices->clear();
-    _ui->listVertices->addItems(list);
+    _ui->listVertices->addItems(strlist);
     _ui->lineXVer->clear();
     _ui->lineYVer->clear();
     _ui->lineZVer->clear();
     _ui->lineEdVer->clear();
+    _vertices = verticelist;
 }
 
-void MainWindow::SetEdgeList(QStringList list){
+void MainWindow::SetEdgeList(const QVector<const Edge*> edgelist, QStringList strlist){
     _ui->listEdges->clear();
-    _ui->listEdges->addItems(list);
+    _ui->listEdges->addItems(strlist);
     _ui->lineVDown->clear();
     _ui->lineVUp->clear();
     _ui->lineFDir->clear();
@@ -101,34 +102,36 @@ void MainWindow::SetEdgeList(QStringList list){
     _ui->lineDirDown->clear();
     _ui->lineEsqUp->clear();
     _ui->lineEsqDown->clear();
+    _edges = edgelist;
 }
 
-void MainWindow::SetFaceList(QStringList list){
+void MainWindow::SetFaceList(const QVector<const Face*> facelist, QStringList strlist){
     _ui->listFaces->clear();
-    _ui->listFaces->addItems(list);
+    _ui->listFaces->addItems(strlist);
     _ui->lineEdgOfFace->clear();
+    _faces = facelist;
 }
 
-void MainWindow::SetSelectedVerticeData(Vertice v){
-    _ui->lineXVer->setText(QString::number(v.GetX()));
-    _ui->lineYVer->setText(QString::number(v.GetY()));
-    _ui->lineZVer->setText(QString::number(v.GetZ()));
-    _ui->lineEdVer->setText(QString::number((uint64_t)v.GetIncidentEdge(), 16));
+void MainWindow::SetSelectedVerticeData(WorkerGeometry::VerticeData v){
+    _ui->lineXVer->setText(v._x);
+    _ui->lineYVer->setText(v._y);
+    _ui->lineZVer->setText(v._z);
+    _ui->lineEdVer->setText(v._incident);
 }
 
-void MainWindow::SetSelectedEdgeData(Edge e){
-    _ui->lineVDown->setText(QString::number((uint64_t)e.GetVerticeDown(), 16));
-    _ui->lineVUp->setText(QString::number((uint64_t)e.GetVerticeUp(), 16));
-    _ui->lineFDir->setText(QString::number((uint64_t)e.GetFaceRight(), 16));
-    _ui->lineFEsq->setText(QString::number((uint64_t)e.GetFaceLeft(), 16));
-    _ui->lineDirUp->setText(QString::number((uint64_t)e.GetEdgeRightUp(), 16));
-    _ui->lineDirDown->setText(QString::number((uint64_t)e.GetEdgeRightDown(), 16));
-    _ui->lineEsqUp->setText(QString::number((uint64_t)e.GetEdgeLeftUp(), 16));
-    _ui->lineEsqDown->setText(QString::number((uint64_t)e.GetEdgeLeftDown(), 16));
+void MainWindow::SetSelectedEdgeData(WorkerGeometry::EdgeData e){
+    _ui->lineVDown->setText(e._verticeDown);
+    _ui->lineVUp->setText(e._verticeUp);
+    _ui->lineFDir->setText(e._faceRight);
+    _ui->lineFEsq->setText(e._faceLeft);
+    _ui->lineDirUp->setText(e._edgeRightUp);
+    _ui->lineDirDown->setText(e._edgeRightDown);
+    _ui->lineEsqUp->setText(e._edgeLeftUp);
+    _ui->lineEsqDown->setText(e._edgeLeftDown);
 }
 
-void MainWindow::SetSelectedFaceData(Face f){
-    _ui->lineEdgOfFace->setText(QString::number((uint64_t)f.GetEdge(), 16));
+void MainWindow::SetSelectedFaceData(WorkerGeometry::FaceData f){
+    _ui->lineEdgOfFace->setText(f._edge);
 }
 
 void MainWindow::SetOperationMatrix(QMatrix4x4 M){
@@ -239,24 +242,24 @@ void MainWindow::On_listVertices_SelectionChanged(int idx){
     if(idx < 0)
         return;
 
-    if(idx < _ui->listVertices->count())
-        emit GetSelectedVertice(_ui->listVertices->item(idx)->text());
+    if(idx < _vertices.size())
+        emit GetSelectedVertice(_vertices[idx]);
 }
 
 void MainWindow::On_listEdges_SelectionChanged(int idx){
     if(idx < 0)
         return;
 
-    if(idx < _ui->listEdges->count())
-        emit GetSelectedEdge(_ui->listEdges->item(idx)->text());
+    if(idx < _edges.size())
+        emit GetSelectedEdge(_edges[idx]);
 }
 
 void MainWindow::On_listFaces_SelectionChanged(int idx){
     if(idx < 0)
         return;
 
-    if(idx < _ui->listFaces->count())
-        emit GetSelectedFace(_ui->listFaces->item(idx)->text());
+    if(idx < _faces.size())
+        emit GetSelectedFace(_faces[idx]);
 }
 
 void MainWindow::On_listOperations_SelectionChanged(int idx){
@@ -390,16 +393,37 @@ void MainWindow::On_buttonClearConsole_Clicked(){
 }
 
 void MainWindow::On_buttonVerticesFromFace_Clicked(){
-    if(_ui->listFaces->selectedItems().size())
-        emit PrintVerticesFromFace(_ui->listFaces->selectedItems()[0]->text());
+    if(!_ui->listFaces->selectedItems().size())
+        return;
+
+    qsizetype row = _ui->listFaces->row(_ui->listFaces->selectedItems()[0]);
+
+    if(row >= _faces.size())
+        return;
+
+    emit PrintVerticesFromFace(_faces[row]);
 }
 
 void MainWindow::On_buttonFacesFromEdge_Clicked(){
-    if(_ui->listEdges->selectedItems().size())
-        emit PrintFacesFromEdge(_ui->listEdges->selectedItems()[0]->text());
+    if(!_ui->listEdges->selectedItems().size())
+        return;
+
+    qsizetype row = _ui->listEdges->row(_ui->listEdges->selectedItems()[0]);
+
+    if(row >= _edges.size())
+        return;
+
+    emit PrintFacesFromEdge(_edges[row]);
 }
 
 void MainWindow::On_buttonEdgesFromVertices_Clicked(){
-    if(_ui->listVertices->selectedItems().size())
-        emit PrintEdgesFromVertice(_ui->listVertices->selectedItems()[0]->text());
+    if(!_ui->listVertices->selectedItems().size())
+        return;
+
+    qsizetype row = _ui->listVertices->row(_ui->listVertices->selectedItems()[0]);
+
+    if(row >= _vertices.size())
+        return;
+
+    emit PrintEdgesFromVertice(_vertices[row]);
 }

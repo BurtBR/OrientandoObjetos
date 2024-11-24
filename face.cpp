@@ -1,13 +1,22 @@
 #include "face.h"
 
-Face::Face(Edge *edge){
+Face::Face(QString id, Edge *edge){
+    SetId(id);
     SetEdge(edge);
+}
+
+void Face::SetId(QString id){
+    _id = id;
 }
 
 void Face::SetEdge(Edge *e){
     _edge = e;
 }
 
-Edge *Face::GetEdge(){
+QString Face::GetId() const{
+    return _id;
+}
+
+Edge *Face::GetEdge() const{
     return _edge;
 }

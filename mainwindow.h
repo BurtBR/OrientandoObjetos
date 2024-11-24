@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QDateTime>
 #include <QThread>
+#include "workergeometry.h"
 #include "errormessage.h"
 #include "vertice.h"
 #include "edge.h"
@@ -22,6 +23,9 @@ class MainWindow : public QMainWindow{
 private:
     Ui::MainWindow *_ui;
     QThread *_threadGeometry = nullptr;
+    QVector<const Vertice*> _vertices;
+    QVector<const Edge*> _edges;
+    QVector<const Face*> _faces;
 
     void DeleteThread(QThread **thread);
     void ConsoleMessage(QString msg);
@@ -36,12 +40,12 @@ public:
 private slots:
     void WorkerMessage(QString msg, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::Misc);
     void FileHandlingFinished();
-    void SetVerticeList(QStringList list);
-    void SetEdgeList(QStringList list);
-    void SetFaceList(QStringList list);
-    void SetSelectedVerticeData(Vertice v);
-    void SetSelectedEdgeData(Edge e);
-    void SetSelectedFaceData(Face f);
+    void SetVerticeList(const QVector<const Vertice*> verticelist, QStringList strlist);
+    void SetEdgeList(const QVector<const Edge*> edgelist, QStringList strlist);
+    void SetFaceList(const QVector<const Face*> facelist, QStringList strlist);
+    void SetSelectedVerticeData(WorkerGeometry::VerticeData v);
+    void SetSelectedEdgeData(WorkerGeometry::EdgeData e);
+    void SetSelectedFaceData(WorkerGeometry::FaceData f);
     void SetOperationMatrix(QMatrix4x4 M);
     void SetOperationList(QStringList list);
     void SetSelectedOperation(float x, float y, float z);
@@ -69,13 +73,13 @@ private slots:
 
 signals:
     void OpenObj(QString filename);
-    void GetSelectedVertice(QString str);
-    void GetSelectedEdge(QString str);
-    void GetSelectedFace(QString str);
+    void GetSelectedVertice(const Vertice *v);
+    void GetSelectedEdge(const Edge *e);
+    void GetSelectedFace(const Face *f);
     void PrintAllData();
-    void PrintVerticesFromFace(QString str);
-    void PrintFacesFromEdge(QString str);
-    void PrintEdgesFromVertice(QString str);
+    void PrintVerticesFromFace(const Face *f);
+    void PrintFacesFromEdge(const Edge *e);
+    void PrintEdgesFromVertice(const Vertice *v);
     void AddOperation(float x, float y, float z, Operation::OpType op);
     void RemoveOperation(size_t idx);
     void MoveOperationUp(size_t idx);

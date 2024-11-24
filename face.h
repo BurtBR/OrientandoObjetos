@@ -1,16 +1,21 @@
 #ifndef FACE_H
 #define FACE_H
 
+#include <QString>
+
 class Edge;
 
 class Face{
 private:
+    QString _id;
     Edge *_edge;
 public:
-    Face(Edge *edge = nullptr);
+    Face(QString id = QString(), Edge *edge = nullptr);
 
+    void SetId(QString id);
     void SetEdge(Edge *e);
-    Edge *GetEdge();
+    QString GetId() const;
+    Edge *GetEdge() const;
 };
 
 #endif // FACE_H
