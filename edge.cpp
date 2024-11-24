@@ -75,7 +75,7 @@ bool Edge::AddEdge(Edge *e, Face *f){
 
     Edge *otherthis, *othere;
 
-    if(HasEdgePlaced(e, f))
+    if(HasEdgeSet(e, f))
         return false;
 
     otherthis = SetEdge(e);
@@ -96,75 +96,6 @@ bool Edge::AddEdge(Edge *e, Face *f){
     }
 
     return true;
-}
-
-bool Edge::ReplaceEdgeNotFacing(Edge *from, Edge *to, Face *f){
-    if(from == nullptr || to == nullptr)
-        return false;
-
-    if(f == GetFaceRight()){
-        if(GetEdgeLeftUp() == from)
-            SetEdgeLeftUp(to);
-        else if(GetEdgeLeftDown() == from)
-            SetEdgeLeftDown(to);
-        else
-            return false;
-    }else if(f == GetFaceLeft()){
-        if(GetEdgeRightUp() == from)
-            SetEdgeRightUp(to);
-        else if(GetEdgeRightDown() == from)
-            SetEdgeRightDown(to);
-        else
-            return false;
-    }else
-        return false;
-
-    return true;
-}
-
-Edge *Edge::SetEdge(Edge *e, Face *f){
-    if(e == nullptr)
-        return nullptr;
-
-    Edge *aux;
-
-    if(e->HasVertice(GetVerticeUp())){
-
-        if(this->IsFaceRight(f)){
-            aux = GetEdgeRightUp();
-            SetEdgeRightUp(e);
-            if(GetEdgeLeftUp() == nullptr)
-                SetEdgeLeftUp(e);
-        }else if(this->IsFaceLeft(f)){
-            aux = GetEdgeLeftUp();
-            SetEdgeLeftUp(e);
-            if(GetEdgeRightUp() == nullptr)
-                SetEdgeRightUp(e);
-        }else
-            return nullptr;
-
-        return aux;
-
-    }else if(e->HasVertice(GetVerticeDown())){
-
-        if(this->IsFaceRight(f)){
-            aux = GetEdgeRightDown();
-            SetEdgeRightDown(e);
-            if(GetEdgeLeftDown() == nullptr)
-                SetEdgeLeftDown(e);
-        }else if(this->IsFaceLeft(f)){
-            aux = GetEdgeLeftDown();
-            SetEdgeLeftDown(e);
-            if(GetEdgeRightDown() == nullptr)
-                SetEdgeRightDown(e);
-        }else
-            return nullptr;
-
-        return aux;
-
-    }
-
-    return nullptr;
 }
 
 Edge *Edge::SetEdge(Edge *e){
@@ -206,86 +137,6 @@ Edge *Edge::SetEdge(Edge *e){
     return aux;
 }
 
-bool Edge::SetEdgeIfNull(Edge *e, Face *f){
-    if(e == nullptr)
-        return false;
-
-    if(e->HasVertice(GetVerticeUp())){
-
-        if(GetEdgeRightUp() != nullptr)
-            return false;
-
-        if(this->IsFaceRight(f)){
-            SetEdgeRightUp(e);
-            SetEdgeLeftUp(e);
-        }else if(this->IsFaceLeft(f)){
-            SetEdgeLeftUp(e);
-            SetEdgeRightUp(e);
-        }else
-            return false;
-
-        return true;
-
-    }else if(e->HasVertice(GetVerticeDown())){
-
-        if(GetEdgeRightDown() != nullptr)
-            return false;
-
-        if(this->IsFaceRight(f)){
-            SetEdgeRightDown(e);
-            SetEdgeLeftDown(e);
-        }else if(this->IsFaceLeft(f)){
-            SetEdgeLeftDown(e);
-            SetEdgeRightDown(e);
-        }else
-            return false;
-
-        return true;
-
-    }
-
-    return false;
-}
-
-bool Edge::SetOpositeEdge(Edge *e, Face *f){
-    if(e == nullptr)
-        return false;
-
-    if(e->HasVertice(GetVerticeUp())){
-
-        if(this->IsFaceRight(f)){
-            SetEdgeLeftUp(e);
-            if(GetEdgeRightUp() == nullptr)
-                SetEdgeRightUp(e);
-        }else if(this->IsFaceLeft(f)){
-            SetEdgeRightUp(e);
-            if(GetEdgeLeftUp() == nullptr)
-                SetEdgeLeftUp(e);
-        }else
-            return false;
-
-        return true;
-
-    }else if(e->HasVertice(GetVerticeDown())){
-
-        if(this->IsFaceRight(f)){
-            SetEdgeLeftDown(e);
-            if(GetEdgeRightDown() == nullptr)
-                SetEdgeRightDown(e);
-        }else if(this->IsFaceLeft(f)){
-            SetEdgeRightDown(e);
-            if(GetEdgeLeftDown() == nullptr)
-                SetEdgeLeftDown(e);
-        }else
-            return false;
-
-        return true;
-
-    }
-
-    return false;
-}
-
 bool Edge::HasVertice(Vertice *v){
     if(v == _vUp)
         return true;
@@ -294,7 +145,7 @@ bool Edge::HasVertice(Vertice *v){
     return false;
 }
 
-bool Edge::HasEdgePlaced(Edge *e, Face *f){
+bool Edge::HasEdgeSet(Edge *e, Face *f){
     if(e == nullptr || f == nullptr)
         return false;
 
@@ -357,7 +208,7 @@ void Edge::SetEdgeRightDown(Edge *e){
     _eRight_Down = e;
 }
 
-Vertice *Edge::GetSharedVertice(Edge *other){
+Vertice *Edge::GetSharedVertice(Edge *other) const{
     if(other == nullptr)
         return nullptr;
 

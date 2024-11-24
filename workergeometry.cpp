@@ -255,19 +255,6 @@ Edge *WorkerGeometry::FindEdge(Vertice *v1, Vertice *v2){
         nextedge = nextedge->GetNextEdge(prevedge, center);
     }
 
-    if(nextedge == nullptr){
-        curredge = ebegin;
-        nextedge = curredge->GetNextEdge(curredge->GetLeftEdge(center), center);
-
-        while(nextedge != nullptr && nextedge != ebegin){
-            if(nextedge->IsEquivalent(v1, v2))
-                return nextedge;
-            prevedge = curredge;
-            curredge = nextedge;
-            nextedge = nextedge->GetNextEdge(prevedge, center);
-        }
-    }
-
     return nullptr;
 }
 

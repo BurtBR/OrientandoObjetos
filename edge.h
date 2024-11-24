@@ -12,6 +12,8 @@ private:
     Vertice *_vUp, *_vDown;
     Face *_fLeft, *_fRight;
     Edge *_eLeft_Up, *_eLeft_Down, *_eRight_Up, *_eRight_Down;
+
+    Edge *SetEdge(Edge *e);
 public:
     Edge(QString id = QString(),
          Vertice *vertice_Up = nullptr,
@@ -32,13 +34,8 @@ public:
     bool IsEquivalent(Vertice *v1, Vertice *v2);
     bool SetNullSide(Face *f, Edge *e1, Edge *e2);
     bool AddEdge(Edge *e, Face *f);
-    bool ReplaceEdgeNotFacing(Edge *from, Edge *to, Face *f);
-    Edge *SetEdge(Edge *e, Face *f);
-    Edge *SetEdge(Edge *e);
-    bool SetEdgeIfNull(Edge *e, Face *f);
-    bool SetOpositeEdge(Edge *e, Face *f);
     bool HasVertice(Vertice *v);
-    bool HasEdgePlaced(Edge *e, Face *f);
+    bool HasEdgeSet(Edge *e, Face *f);
 
     void SetId(QString id);
     void SetVerticeUp(Vertice *v);
@@ -50,7 +47,7 @@ public:
     void SetEdgeRightUp(Edge *e);
     void SetEdgeRightDown(Edge *e);
     QString GetId() const;
-    Vertice *GetSharedVertice(Edge *other);
+    Vertice *GetSharedVertice(Edge *other) const;
     Vertice *GetVerticeUp() const;
     Vertice *GetVerticeDown() const;
     Face *GetFaceLeft() const;
