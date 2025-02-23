@@ -15,6 +15,8 @@ OpenGLWidget::~OpenGLWidget(){
 void OpenGLWidget::initializeGL(){
     initializeOpenGLFunctions();
 
+    glOrtho(0, 0, 10, 10, 1.0, -1.0);
+
     // Background Color
     glClearColor(0.5,0.5,0.5,1.0);
 }

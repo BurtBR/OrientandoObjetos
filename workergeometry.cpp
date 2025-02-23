@@ -324,6 +324,11 @@ void WorkerGeometry::SendGLVertices(){
     std::list<Face>::iterator itr = _faces.begin();
     Edge *currEdge, *nextEdge, *beforeEdge, *startEdge;
     Vertice *vertice;
+    float minX, minY, maxX, maxY, width, height;
+
+    GetMaxCoordinates(minX, minY, maxX, maxY);
+    width = maxX - minX;
+    height = maxY - minY;
 
     while(itr != _faces.end()){
 
@@ -333,10 +338,11 @@ void WorkerGeometry::SendGLVertices(){
         do{
             nextEdge = currEdge->GetNextEdge(beforeEdge, &(*itr));
 
+            // Append normalized vertices with 10% border
             vertice = currEdge->GetSharedVertice(nextEdge);
-            verticeVector.append(vertice->GetX());
-            verticeVector.append(vertice->GetY());
-            verticeVector.append(vertice->GetZ());
+            verticeVector.append( (((vertice->GetX()-minX)/width) * 1.8) -0.9);
+            verticeVector.append( (((vertice->GetY()-minY)/height) * 1.8) - 0.9);
+            verticeVector.append(0);
 
             beforeEdge = currEdge;
             currEdge = nextEdge;
@@ -347,6 +353,40 @@ void WorkerGeometry::SendGLVertices(){
     }
 
     emit SetOpenGLVertexData(verticeVector);
+}
+
+void WorkerGeometry::GetMaxCoordinates(float &minX, float &minY, float &maxX, float &maxY){
+
+    if(_vertices.empty()){
+        minX = -1.0f;
+        minY = -1.0f;
+        maxX = 1.0f;
+        maxY = 1.0f;
+        return;
+    }
+
+    std::list<Vertice>::iterator itr = _vertices.begin();
+
+    minX = itr->GetX();
+    minY = itr->GetY();
+    maxX = itr->GetX();
+    maxY = itr->GetY();
+
+    itr++;
+
+    while(itr != _vertices.end()){
+        if(itr->GetX() < minX)
+            minX = itr->GetX();
+        else if(itr->GetX() > maxX)
+            maxX = itr->GetX();
+
+        if(itr->GetY() < minY)
+            minY = itr->GetY();
+        else if(itr->GetY() > maxY)
+            maxY = itr->GetY();
+
+        itr++;
+    }
 }
 
 void WorkerGeometry::GetSelectedVertice(const Vertice *v){

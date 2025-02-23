@@ -25,6 +25,7 @@ public:
     ~OpenGLWidget();
 
     bool SetVertexData(const float buffer[], qsizetype size);
+    void SetViewPort(QRect viewport);
 
 signals:
     void Message(QString msg, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::FailedToDisplay);

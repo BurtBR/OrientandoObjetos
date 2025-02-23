@@ -54,6 +54,7 @@ private:
     void SendOperations();
     void CalculateOpMatrix();
     void SendGLVertices();
+    void GetMaxCoordinates(float &minX, float &minY, float &maxX, float &maxY);
 
 public:
     WorkerGeometry(QObject *parent = nullptr);
