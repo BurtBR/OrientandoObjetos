@@ -49,6 +49,7 @@ private slots:
     void SetOperationMatrix(QMatrix4x4 M);
     void SetOperationList(QStringList list);
     void SetSelectedOperation(float x, float y, float z);
+    void SetOpenGLVertexData(QVector<float> vertex);
 
     void On_listVertices_SelectionChanged(int idx);
     void On_listEdges_SelectionChanged(int idx);

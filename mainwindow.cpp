@@ -180,6 +180,10 @@ void MainWindow::SetSelectedOperation(float x, float y, float z){
     _ui->lineOpZ->setText(QString::number(z));
 }
 
+void MainWindow::SetOpenGLVertexData(QVector<float> vertex){
+    _ui->openGLWidget->SetVertexData(vertex.constData(), vertex.size());
+}
+
 void MainWindow::ConsoleMessage(QString msg){
     _ui->textConsole->append(QDateTime::currentDateTime().toString("hh:mm:ss") + " " + msg);
 }
@@ -215,6 +219,7 @@ bool MainWindow::StartThreadGeometry(){
     connect(worker, &WorkerGeometry::SetOperationList, this, &MainWindow::SetOperationList);
     connect(worker, &WorkerGeometry::SetOperationMatrix, this, &MainWindow::SetOperationMatrix);
     connect(worker, &WorkerGeometry::SetSelectedOperation, this, &MainWindow::SetSelectedOperation);
+    connect(worker, &WorkerGeometry::SetOpenGLVertexData, this, &MainWindow::SetOpenGLVertexData);
 
     connect(this, &MainWindow::OpenObj, worker, &WorkerGeometry::OpenObj);
     connect(this, &MainWindow::GetSelectedVertice, worker, &WorkerGeometry::GetSelectedVertice);

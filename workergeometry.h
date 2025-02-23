@@ -53,6 +53,7 @@ private:
     void SendFaceList();
     void SendOperations();
     void CalculateOpMatrix();
+    void SendGLVertices();
 
 public:
     WorkerGeometry(QObject *parent = nullptr);
@@ -90,6 +91,7 @@ signals:
     void SetOperationMatrix(QMatrix4x4 M);
     void SetOperationList(QStringList list);
     void SetSelectedOperation(float x, float y, float z);
+    void SetOpenGLVertexData(QVector<float> vertex);
 };
 
 #endif // WORKERGEOMETRY_H

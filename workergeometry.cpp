@@ -319,6 +319,36 @@ void WorkerGeometry::SendOperations(){
     emit SetOperationList(list);
 }
 
+void WorkerGeometry::SendGLVertices(){
+    QVector<float> verticeVector;
+    std::list<Face>::iterator itr = _faces.begin();
+    Edge *currEdge, *nextEdge, *beforeEdge, *startEdge;
+    Vertice *vertice;
+
+    while(itr != _faces.end()){
+
+        startEdge = currEdge = itr->GetEdge();
+        beforeEdge = currEdge->GetSomeNextEdge(&(*itr));
+
+        do{
+            nextEdge = currEdge->GetNextEdge(beforeEdge, &(*itr));
+
+            vertice = currEdge->GetSharedVertice(nextEdge);
+            verticeVector.append(vertice->GetX());
+            verticeVector.append(vertice->GetY());
+            verticeVector.append(vertice->GetZ());
+
+            beforeEdge = currEdge;
+            currEdge = nextEdge;
+
+        }while(currEdge != startEdge);
+
+        itr++;
+    }
+
+    emit SetOpenGLVertexData(verticeVector);
+}
+
 void WorkerGeometry::GetSelectedVertice(const Vertice *v){
 
     if(v == nullptr)
@@ -421,6 +451,7 @@ void WorkerGeometry::OpenObj(QString filename){
     SendEdgeList();
     SendFaceList();
     SendOperations();
+    SendGLVertices();
 
     emit FileHandlingFinished();
 }
