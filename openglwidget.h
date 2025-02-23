@@ -5,6 +5,8 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
 
+#include "errormessage.h"
+
 class OpenGLWidget : public QOpenGLWidget, public QOpenGLFunctions{
     Q_OBJECT
 private:
@@ -23,6 +25,9 @@ public:
     ~OpenGLWidget();
 
     bool SetVertexData(const float buffer[], qsizetype size);
+
+signals:
+    void Message(QString msg, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::FailedToDisplay);
 };
 
 #endif // OPENGLWIDGET_H

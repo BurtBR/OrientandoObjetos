@@ -12,7 +12,8 @@ public:
         FailedToWrite,
         FailedToOpenFile,
         CorruptedFile,
-        FailedToAllocate
+        FailedToAllocate,
+        FailedToDisplay
     };
 
     static QString GetErrorStr(ErrorCode e);

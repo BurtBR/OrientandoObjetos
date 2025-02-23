@@ -10,6 +10,8 @@
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainWindow){
     _ui->setupUi(this);
     _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageMT);
+
+    connect(_ui->openGLWidget, &OpenGLWidget::Message, this, &MainWindow::WorkerMessage);
 }
 
 MainWindow::~MainWindow(){

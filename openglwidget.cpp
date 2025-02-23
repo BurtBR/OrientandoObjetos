@@ -6,6 +6,7 @@ OpenGLWidget::OpenGLWidget(QWidget *parent) : QOpenGLWidget{parent}{
 
 OpenGLWidget::~OpenGLWidget(){
     if(_bufferData){
+        glDeleteBuffers(1, &_bufferIndex);
         delete _bufferData;
         _bufferData = nullptr;
     }
@@ -50,11 +51,19 @@ void OpenGLWidget::resizeGL(int w, int h){
 }
 
 bool OpenGLWidget::SetVertexData(const GLfloat buffer[], qsizetype size){
-    if(_bufferIndex < 0){
+    if(_bufferIndex < 0 || ((size/3) % 3)){
+        if(_bufferData){
+            glDeleteBuffers(1, &_bufferIndex);
+            delete _bufferData;
+            _bufferData = nullptr;
+        }
+        _bufferSize = 0;
+        emit Message("Atualmente exibição de polígonos com faces não triangulares não está implementada", ErrorMessage::ErrorCode::FailedToDisplay);
         return false;
     }
 
     if(_bufferData){
+        glDeleteBuffers(1, &_bufferIndex);
         delete _bufferData;
         _bufferData = nullptr;
     }
