@@ -23,7 +23,7 @@ void OpenGLWidget::paintGL(){
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if(!_bufferSize)
+    if(!_bufferSize || !_bufferData)
         return;
 
     glColor3f(0.5, 0.0 ,0.0);
@@ -68,14 +68,13 @@ bool OpenGLWidget::SetVertexData(const GLfloat buffer[], qsizetype size){
         _bufferData = nullptr;
     }
 
-    _bufferSize = size*sizeof(GLfloat);
-
     try{
         _bufferData = new GLfloat[size];
     }catch(...){
         return false;
     }
 
+    _bufferSize = size*sizeof(GLfloat);
     memcpy(_bufferData, buffer, _bufferSize);
 
     // Generate 1 buffer, put the resulting identifier in _bufferIndex
