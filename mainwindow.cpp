@@ -11,6 +11,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
     _ui->setupUi(this);
     _ui->stackedWidgetOptions->setCurrentWidget(_ui->pageMT);
 
+    // Hide not implemented
+    _ui->actionNovo->setVisible(false);
+    _ui->actionSalvar->setVisible(false);
+    _ui->actionSalvarComo->setVisible(false);
+
     connect(_ui->openGLWidget, &OpenGLWidget::Message, this, &MainWindow::WorkerMessage);
 }
 
