@@ -50,6 +50,7 @@ private slots:
     void SetOperationList(QStringList list);
     void SetSelectedOperation(float x, float y, float z);
     void SetOpenGLVertexData(QVector<float> vertex);
+    void OpenGLWindowSizeChanged();
 
     void On_listVertices_SelectionChanged(int idx);
     void On_listEdges_SelectionChanged(int idx);
@@ -87,5 +88,6 @@ signals:
     void MoveOperationDown(size_t idx);
     void SetOperationXYZ(size_t idx, float x, float y, float z);
     void GetSelectedOperation(size_t idx);
+    void ViewportProportion(int width, int height);
 };
 #endif // MAINWINDOW_H

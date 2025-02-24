@@ -41,6 +41,7 @@ private:
     std::list<Face> _faces;
     QVector<Operation> _ops;
     QMatrix4x4 _opMatrix;
+    float _viewportProportion = 1.0f;
 
     bool InsertVertice(QStringList list, QVector<Vertice*> &vectorvertices);
     bool InsertFace(QStringList list, QVector<Vertice*> &vectorvertices);
@@ -79,6 +80,7 @@ public slots:
     void MoveOperationDown(size_t idx);
     void SetOperationXYZ(size_t idx, float x, float y, float z);
     void GetSelectedOperation(size_t idx);
+    void SetViewPortProportions(int width, int height);
 
 signals:
     void SetVerticeList(const QVector<const Vertice*> verticelist, QStringList strlist);

@@ -342,8 +342,8 @@ void WorkerGeometry::SendGLVertices(){
 
             // Append normalized vertices with 10% border
             coordinates = currEdge->GetSharedVertice(nextEdge)->Operate(_opMatrix.toGenericMatrix<4, 4>());
-            verticeVector.append( (((coordinates.data()[0]-minX)/width) * 1.8) -0.9);
-            verticeVector.append( (((coordinates.data()[1]-minY)/height) * 1.8) - 0.9);
+            verticeVector.append( ((((coordinates.data()[0]-minX)/width) * 1.8) -0.9)*_viewportProportion );
+            verticeVector.append( ((((coordinates.data()[1]-minY)/height) * 1.8) - 0.9) );
             verticeVector.append(0);
 
             beforeEdge = currEdge;
@@ -717,4 +717,9 @@ void WorkerGeometry::GetSelectedOperation(size_t idx){
         return;
 
     emit SetSelectedOperation(_ops[idx].GetX(), _ops[idx].GetY(), _ops[idx].GetZ());
+}
+
+void WorkerGeometry::SetViewPortProportions(int width, int height){
+    _viewportProportion = ((float)height)/((float)width);
+    SendGLVertices();
 }

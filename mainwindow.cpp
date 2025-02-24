@@ -15,8 +15,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), _ui(new Ui::MainW
     _ui->actionNovo->setVisible(false);
     _ui->actionSalvar->setVisible(false);
     _ui->actionSalvarComo->setVisible(false);
-
-    connect(_ui->openGLWidget, &OpenGLWidget::Message, this, &MainWindow::WorkerMessage);
 }
 
 MainWindow::~MainWindow(){
@@ -61,6 +59,8 @@ bool MainWindow::Init(){
     connect(_ui->listEdges, &QListWidget::currentRowChanged, this, &MainWindow::On_listEdges_SelectionChanged);
     connect(_ui->listFaces, &QListWidget::currentRowChanged, this, &MainWindow::On_listFaces_SelectionChanged);
     connect(_ui->listOperations, &QListWidget::currentRowChanged, this, &MainWindow::On_listOperations_SelectionChanged);
+    connect(_ui->openGLWidget, &OpenGLWidget::Message, this, &MainWindow::WorkerMessage);
+    connect(_ui->openGLWidget, &OpenGLWidget::resized, this, &MainWindow::OpenGLWindowSizeChanged);
 
     if(!StartThreadGeometry())
         return false;
@@ -191,6 +191,10 @@ void MainWindow::SetOpenGLVertexData(QVector<float> vertex){
     _ui->openGLWidget->SetVertexData(vertex.constData(), vertex.size());
 }
 
+void MainWindow::OpenGLWindowSizeChanged(){
+    emit ViewportProportion(_ui->openGLWidget->width(), _ui->openGLWidget->height());
+}
+
 void MainWindow::ConsoleMessage(QString msg){
     _ui->textConsole->append(QDateTime::currentDateTime().toString("hh:mm:ss") + " " + msg);
 }
@@ -241,6 +245,7 @@ bool MainWindow::StartThreadGeometry(){
     connect(this, &MainWindow::MoveOperationDown, worker, &WorkerGeometry::MoveOperationDown);
     connect(this, &MainWindow::SetOperationXYZ, worker, &WorkerGeometry::SetOperationXYZ);
     connect(this, &MainWindow::GetSelectedOperation, worker, &WorkerGeometry::GetSelectedOperation);
+    connect(this, &MainWindow::ViewportProportion, worker, &WorkerGeometry::SetViewPortProportions);
 
     connect(_ui->buttonPrintStructures, &QToolButton::clicked, worker, &WorkerGeometry::PrintAllData);
 

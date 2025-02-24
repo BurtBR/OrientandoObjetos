@@ -29,6 +29,7 @@ public:
 
 signals:
     void Message(QString msg, ErrorMessage::ErrorCode code = ErrorMessage::ErrorCode::FailedToDisplay);
+    void SizeChanged(QSize size);
 };
 
 #endif // OPENGLWIDGET_H
