@@ -15,8 +15,6 @@ OpenGLWidget::~OpenGLWidget(){
 void OpenGLWidget::initializeGL(){
     initializeOpenGLFunctions();
 
-    glOrtho(0, 0, 10, 10, 1.0, -1.0);
-
     // Background Color
     glClearColor(0.5,0.5,0.5,1.0);
 }
@@ -28,7 +26,7 @@ void OpenGLWidget::paintGL(){
     if(!_bufferSize || !_bufferData)
         return;
 
-    glColor3f(0.5, 0.0 ,0.0);
+    glColor3f(0.8, 0.0 ,0.0);
 
     // 1st attribute buffer : vertices
     glEnableVertexAttribArray(0);
