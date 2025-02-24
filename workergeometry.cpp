@@ -325,7 +325,6 @@ void WorkerGeometry::SendGLVertices(){
     QVector<float> verticeVector;
     std::list<Face>::iterator itr = _faces.begin();
     Edge *currEdge, *nextEdge, *beforeEdge, *startEdge;
-    Vertice *vertice;
     QGenericMatrix<4, 1, float> coordinates;
     float minX, minY, maxX, maxY, width, height;
 
@@ -515,7 +514,8 @@ void WorkerGeometry::PrintAllData(){
                      QString::number(v->GetX()).rightJustified(3,' ') + ";" +
                      QString::number(v->GetY()).rightJustified(3,' ') + ";" +
                      QString::number(v->GetZ()).rightJustified(3,' ') + ") |" +
-                     " Aresta " + v->GetIncidentEdge()->GetId() + " |", ErrorMessage::ErrorCode::Misc);
+                     " Aresta " + (v->GetIncidentEdge() ? v->GetIncidentEdge()->GetId() + " |" : "- |"),
+                     ErrorMessage::ErrorCode::Misc);
         v++;
     }
 
@@ -523,17 +523,18 @@ void WorkerGeometry::PrintAllData(){
         emit Message("Aresta " + e->GetId() + "\n| "+
                      "V. Up " + e->GetVerticeUp()->GetId() + " | "+
                      "V. Down " + e->GetVerticeDown()->GetId() + " |\n| "+
-                     "Face Dir. " + e->GetFaceRight()->GetId() + " | "+
-                     "Dir. Up " + e->GetEdgeRightUp()->GetId() + " | "+
-                     "Dir. Down " + e->GetEdgeRightDown()->GetId() + " |\n| "+
-                     "Face Esq. " + e->GetFaceLeft()->GetId() + " | "+
-                     "Esq. Up " + e->GetEdgeLeftUp()->GetId() + " | "+
-                     "Esq. Down " + e->GetEdgeLeftDown()->GetId() + " | ", ErrorMessage::ErrorCode::Misc);
+                     "Face Dir. " + (e->GetFaceRight() ? e->GetFaceRight()->GetId() + " | " : "- | ")+
+                     "Dir. Up " + (e->GetEdgeRightUp() ? e->GetEdgeRightUp()->GetId() + " | " : "- | ")+
+                     "Dir. Down " + (e->GetEdgeRightDown() ? e->GetEdgeRightDown()->GetId() + " |\n| " : "- |\n| ")+
+                     "Face Esq. " + (e->GetFaceLeft() ? e->GetFaceLeft()->GetId() + " | " : "- | ")+
+                     "Esq. Up " + (e->GetEdgeLeftUp() ? e->GetEdgeLeftUp()->GetId() + " | " : "- | ")+
+                     "Esq. Down " + (e->GetEdgeLeftDown() ? e->GetEdgeLeftDown()->GetId() + " | " : "- | "),
+                     ErrorMessage::ErrorCode::Misc);
         e++;
     }
 
     while(f != _faces.end()){
-        emit Message("Face " + QString::number((uint64_t)&(*f), 16) + " | " +
+        emit Message("Face " + f->GetId() + " | " +
                          "Aresta " + f->GetEdge()->GetId() + " |", ErrorMessage::ErrorCode::Misc);
         f++;
     }
