@@ -305,6 +305,7 @@ void WorkerGeometry::SendOperations(){
         _opMatrix.setToIdentity();
         emit SetOperationMatrix(_opMatrix);
         emit SetOperationList(QStringList());
+        SendGLVertices();
         return;
     }
 
@@ -317,6 +318,7 @@ void WorkerGeometry::SendOperations(){
     }
 
     emit SetOperationList(list);
+    SendGLVertices();
 }
 
 void WorkerGeometry::SendGLVertices(){
@@ -324,6 +326,7 @@ void WorkerGeometry::SendGLVertices(){
     std::list<Face>::iterator itr = _faces.begin();
     Edge *currEdge, *nextEdge, *beforeEdge, *startEdge;
     Vertice *vertice;
+    QGenericMatrix<4, 1, float> coordinates;
     float minX, minY, maxX, maxY, width, height;
 
     GetMaxCoordinates(minX, minY, maxX, maxY);
@@ -339,9 +342,9 @@ void WorkerGeometry::SendGLVertices(){
             nextEdge = currEdge->GetNextEdge(beforeEdge, &(*itr));
 
             // Append normalized vertices with 10% border
-            vertice = currEdge->GetSharedVertice(nextEdge);
-            verticeVector.append( (((vertice->GetX()-minX)/width) * 1.8) -0.9);
-            verticeVector.append( (((vertice->GetY()-minY)/height) * 1.8) - 0.9);
+            coordinates = currEdge->GetSharedVertice(nextEdge)->Operate(_opMatrix.toGenericMatrix<4, 4>());
+            verticeVector.append( (((coordinates.data()[0]-minX)/width) * 1.8) -0.9);
+            verticeVector.append( (((coordinates.data()[1]-minY)/height) * 1.8) - 0.9);
             verticeVector.append(0);
 
             beforeEdge = currEdge;
@@ -652,6 +655,7 @@ void WorkerGeometry::AddOperation(float x, float y, float z, Operation::OpType o
 void WorkerGeometry::CalculateOpMatrix(){
     if(!_ops.size()){
         _opMatrix.setToIdentity();
+        SendGLVertices();
         return;
     }
 

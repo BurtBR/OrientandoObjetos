@@ -2,6 +2,7 @@
 #define VERTICE_H
 
 #include <QGenericMatrix>
+#include <QMatrix4x4>
 #include <QString>
 
 class Edge;
@@ -33,6 +34,7 @@ public:
     float GetZ() const;
     float GetW() const;
     Edge *GetIncidentEdge() const;
+    QGenericMatrix<4, 1, float> Operate(QGenericMatrix<4, 4, float> operation);
 };
 
 #endif // VERTICE_H

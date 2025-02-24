@@ -94,3 +94,7 @@ float Vertice::GetW() const{
 Edge *Vertice::GetIncidentEdge() const {
     return _incident;
 }
+
+QGenericMatrix<4, 1, float> Vertice::Operate(QGenericMatrix<4, 4, float> operation){
+    return GetPosition().transposed()*operation;
+}

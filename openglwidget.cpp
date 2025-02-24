@@ -85,5 +85,7 @@ bool OpenGLWidget::SetVertexData(const GLfloat buffer[], qsizetype size){
     // Give the vertices to OpenGL
     glBufferData(GL_ARRAY_BUFFER, _bufferSize, _bufferData, GL_DYNAMIC_DRAW);
 
+    repaint();
+
     return true;
 }
